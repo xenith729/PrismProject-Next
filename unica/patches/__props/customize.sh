@@ -1,26 +1,26 @@
-# Property identifying the UN1CA version
+# Property identifying the ROM version
 SET_PROP "system" "ro.prismproject.version" "$ROM_VERSION"
 EVAL "echo \"ro.prismproject.version u:object_r:build_prop:s0 exact string\" >> \"$WORK_DIR/system/system/etc/selinux/plat_property_contexts\""
 
-# Property identifying the UN1CA build time
+# Property identifying the ROM build time
 SET_PROP "system" "ro.prismproject.timestamp" "$ROM_BUILD_TIMESTAMP"
 EVAL "echo \"ro.prismproject.timestamp u:object_r:build_prop:s0 exact string\" >> \"$WORK_DIR/system/system/etc/selinux/plat_property_contexts\""
 
-# Property identifying the device codename UN1CA is being built for
+# Property identifying the device codename ROM is being built for
 SET_PROP "system" "ro.prismproject.device" "$TARGET_CODENAME"
 EVAL "echo \"ro.prismproject.device u:object_r:build_prop:s0 exact string\" >> \"$WORK_DIR/system/system/etc/selinux/plat_property_contexts\""
 
-# Property identifying the UN1CA build as a whole
+# Property identifying the ROM build as a whole
 # This bundles the properties which aren't already part of Android OS
 # unica/<ro.prismproject.device>:<MAJOR.MINOR.PATCH from ro.prismproject.version>/<8-digit commit hash from ro.prismproject.version><.dirty>/<ro.prismproject.timestamp>:<user/userdebug>/<release/test>-keys
 
 # unica header + the target codename
 FINGERPRINT="unica/${TARGET_CODENAME}:"
 
-# version value is UN1CA version
+# version value is ROM version
 FINGERPRINT+="$(grep -o "^[0-9]\+\.[0-9]\+\.[0-9]\+" <<< "$ROM_VERSION")/"
 
-# build ID value is the UN1CA commit
+# build ID value is the ROM commit
 FINGERPRINT+="$(cut -d "-" -f 2 <<< "$ROM_VERSION")"
 # append .dirty if dirty
 if grep -q -- "-dirty" <<< "$ROM_VERSION"; then
@@ -29,7 +29,7 @@ else
     FINGERPRINT+="/"
 fi
 
-# incremental value matching the UN1CA build timestamp
+# incremental value matching the ROM build timestamp
 FINGERPRINT+="${ROM_BUILD_TIMESTAMP}:"
 
 # user/userdebug reflecting $DEBUG
