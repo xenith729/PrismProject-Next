@@ -1,4 +1,4 @@
 id=floating_feature
-name=floating_feature.xml patches
+name=floating_feature.xml 패치
 author=salvogiangri
-description=Compares both source/target Floating Feature and applies patches if required.
+description=소스와 타겟의 floating_feature.xml을 비교하고 필요한 경우 패치를 적용합니다.
