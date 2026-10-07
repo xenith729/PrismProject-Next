@@ -16,7 +16,7 @@ PrismProject-Next는 **국내판 삼성 갤럭시 기기를 위한 커스텀 펌
 
 ## 기능
 ### 주요 기능
-- 최신 갤럭시 S24 One UI 9.0 펌웨어 기반
+- 최신 갤럭시 S22 One UI 8.0 펌웨어 기반
 - EROFS 파일 시스템 사용
 - 불필요한 시스템 서비스 및 블로트웨어 제거
 - 순정 소프트웨어에 가깝고 최적화된 경험
@@ -59,7 +59,7 @@ PrismProject-Next는 **국내판 삼성 갤럭시 기기를 위한 커스텀 펌
 - [platform_build](https://android.googlesource.com/platform/build/) (ext4_utils, f2fs_utils, signapk) - [Apache License 2.0](https://source.android.com/docs/setup/about/licenses) 하에 배포
 
 ## 크레딧
-- **[Quasar](https://github.com/quasar-0707)** - 프로젝트 주도, 배너 제작, 빌드 시스템 수정, S21 시리즈 지원, ROM 모드 제작
+- **[Xenith](https://github.com/xenith729)** - 프로젝트 주도, 배너 제작, 빌드 시스템 수정, S21 시리즈 지원, ROM 모드 제작
 - **[salvogiangri](https://github.com/salvogiangri)** - UN1CA 빌드 시스템, ROM 패치, 모드 제작
 
 ### 원본 UN1CA 크레딧
