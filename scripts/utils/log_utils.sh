@@ -27,7 +27,7 @@ _GET_CALLER_INFO()
 # ]
 
 # LOG <message>
-# Prints a log message in the build output.
+# 빌드 출력에 로그 메세지를 출력합니다.
 LOG()
 {
     local INDENT="${INDENT_LEVEL:=0}"
@@ -36,7 +36,7 @@ LOG()
 }
 
 # LOGE <message>
-# Prints an error log message in the build output.
+# 빌드 출력에 오류 로그 메세지를 출력합니다.
 LOGE()
 {
     local RED="\033[0;31m"
@@ -46,7 +46,7 @@ LOGE()
 }
 
 # LOGW <message>
-# Prints a warning log message in the build output.
+# 빌드 출력에 경고 로그 메세지를 출력합니다.
 LOGW()
 {
     local YELLOW="\033[0;33m"
@@ -56,7 +56,7 @@ LOGW()
 }
 
 # LOG_STEP_IN <bold> <message>
-# Increments the output indentation, additionally prints a log message if supplied.
+# 출력을 들여쓰기를 증가시키며, 제공된 경우 로그 메시지도 함께 출력합니다.
 LOG_STEP_IN()
 {
     local BOLD
@@ -76,7 +76,7 @@ LOG_STEP_IN()
 }
 
 # LOG_STEP_OUT
-# Reduces the output indentation.
+# 출력 들여쓰기를 감소시킵니다.
 LOG_STEP_OUT()
 {
     local INDENT="${INDENT_LEVEL:=0}"

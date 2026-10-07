@@ -1,5 +1,5 @@
 if [ ! -f "$WORK_DIR/kernel/boot.img" ]; then
-    ABORT "File not found: ${WORK_DIR//$SRC_DIR\//}/kernel/boot.img"
+    ABORT "파일이 존재하지 않습니다: ${WORK_DIR//$SRC_DIR\//}/kernel/boot.img"
 fi
 
 LOG "- Extracting boot.img"

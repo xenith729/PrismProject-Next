@@ -75,7 +75,7 @@
 .method public getSummary()Ljava/lang/CharSequence;
     .locals 2
 
-    const-string p0, "ro.unica.version"
+    const-string p0, "ro.prismproject.version"
 
     const-string v0, "Unknown"
 
@@ -83,7 +83,7 @@
 
     move-result-object p0
 
-    const-string v0, "ro.unica.codename"
+    const-string v0, "ro.prismproject.codename"
 
     const-string v1, ""
 

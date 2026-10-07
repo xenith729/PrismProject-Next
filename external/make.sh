@@ -163,7 +163,7 @@ if [[ "$1" == "--check-tools" ]]; then
         exit 1
     fi
 elif [ "$1" ]; then
-    echo "Usage: $(basename "$0" | sed 's/build_dependencies.sh/build_dependencies/')" >&2
+    echo "사용 예제: $(basename "$0" | sed 's/build_dependencies.sh/build_dependencies/')" >&2
     echo "This script does not accept any arguments." >&2
     exit 1
 fi

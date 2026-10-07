@@ -36,27 +36,27 @@ VENDOR_DEBLOAT="$(sed "/^$/d" <<< "$VENDOR_DEBLOAT" | sort)"
 if [ "$ODM_DEBLOAT" ]; then
     xargs -I "{}" -P "$(nproc)" \
         bash -c 'source "$SRC_DIR/scripts/utils/module_utils.sh"; DELETE_FROM_WORK_DIR "odm" "$1"' "bash" "{}" \
-        <<< "$ODM_DEBLOAT" 2>&1 | sed "/File not found/d"
+        <<< "$ODM_DEBLOAT" 2>&1 | sed "/파일이 존재하지 않습니다/d"
 fi
 if [ "$PRODUCT_DEBLOAT" ]; then
     xargs -I "{}" -P "$(nproc)" \
         bash -c 'source "$SRC_DIR/scripts/utils/module_utils.sh"; DELETE_FROM_WORK_DIR "product" "$1"' "bash" "{}" \
-        <<< "$PRODUCT_DEBLOAT" 2>&1 | sed "/File not found/d"
+        <<< "$PRODUCT_DEBLOAT" 2>&1 | sed "/파일이 존재하지 않습니다/d"
 fi
 if [ "$SYSTEM_DEBLOAT" ]; then
     xargs -I "{}" -P "$(nproc)" \
         bash -c 'source "$SRC_DIR/scripts/utils/module_utils.sh"; DELETE_FROM_WORK_DIR "system" "$1"' "bash" "{}" \
-        <<< "$SYSTEM_DEBLOAT" 2>&1 | sed "/File not found/d"
+        <<< "$SYSTEM_DEBLOAT" 2>&1 | sed "/파일이 존재하지 않습니다/d"
 fi
 if [ "$SYSTEM_EXT_DEBLOAT" ]; then
     xargs -I "{}" -P "$(nproc)" \
         bash -c 'source "$SRC_DIR/scripts/utils/module_utils.sh"; DELETE_FROM_WORK_DIR "system_ext" "$1"' "bash" "{}" \
-        <<< "$SYSTEM_EXT_DEBLOAT" 2>&1 | sed "/File not found/d"
+        <<< "$SYSTEM_EXT_DEBLOAT" 2>&1 | sed "/파일이 존재하지 않습니다/d"
 fi
 if [ "$VENDOR_DEBLOAT" ]; then
     xargs -I "{}" -P "$(nproc)" \
         bash -c 'source "$SRC_DIR/scripts/utils/module_utils.sh"; DELETE_FROM_WORK_DIR "vendor" "$1"' "bash" "{}" \
-        <<< "$VENDOR_DEBLOAT" 2>&1 | sed "/File not found/d"
+        <<< "$VENDOR_DEBLOAT" 2>&1 | sed "/파일이 존재하지 않습니다/d"
 fi
 
 unset ODM_DEBLOAT PRODUCT_DEBLOAT SYSTEM_DEBLOAT SYSTEM_EXT_DEBLOAT VENDOR_DEBLOAT

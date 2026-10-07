@@ -6,7 +6,7 @@ source "$SRC_DIR/scripts/utils/smali_utils.sh"
 # ]
 
 # ABORT <message>
-# Stops the build process, additionally prints a log message if supplied.
+# 빌드 프로세스를 중단하며, 제공된 경우 오류 메시지를 출력합니다.
 ABORT()
 {
     if [ "$1" ]; then
@@ -16,7 +16,7 @@ ABORT()
 }
 
 # APPLY_PATCH <partition> <apk/jar> <patch>
-# Applies a unified diff patch to the provided APK/JAR decoded directory.
+# 디코딩된 APK/JAR 디렉터리에 unified diff 패치를 적용합니다.
 APPLY_PATCH()
 {
     _CHECK_NON_EMPTY_PARAM "PARTITION" "$1" || return 1
@@ -28,12 +28,12 @@ APPLY_PATCH()
     local PATCH="$3"
 
     if ! IS_VALID_PARTITION_NAME "$PARTITION"; then
-        LOGE "\"$PARTITION\" is not a valid partition name"
+        LOGE "\"$PARTITION\"은(는) 유효한 파티션 이름이 아닙니다"
         return 1
     fi
 
     if [ ! -f "$PATCH" ]; then
-        LOGE "File not found: ${PATCH//$SRC_DIR\//}"
+        LOGE "파일이 존재하지 않습니다: ${PATCH//$SRC_DIR\//}"
         return 1
     fi
 
@@ -43,12 +43,12 @@ APPLY_PATCH()
 
     DECODE_APK "$PARTITION" "$FILE" || return 1
 
-    LOG "- Applying \"$(grep "^Subject:" "$PATCH" | sed "s/.*PATCH] //")\" to /$PARTITION/$FILE"
+    LOG "- /$PARTITION/$FILE에 \"$(grep "^Subject:" "$PATCH" | sed "s/.*PATCH] //")\" 패치 적용 중"
     EVAL "LC_ALL=C git apply --directory=\"$APKTOOL_DIR/$PARTITION/${FILE//system\//}\" --verbose --unsafe-paths \"$PATCH\"" || return 1
 }
 
 # DECODE_APK <partition> <apk/jar>
-# Same usage as `run_cmd apktool d <partition> <apk/jar>`.
+# `run_cmd apktool d <partition> <apk/jar>`와 동일한 용도입니다.
 DECODE_APK()
 {
     _CHECK_NON_EMPTY_PARAM "PARTITION" "$1" || return 1
@@ -63,7 +63,7 @@ DECODE_APK()
 }
 
 # GET_GALAXY_STORE_DOWNLOAD_URL "<package name/id>"
-# Returns a URL to download the desired app from Samsung servers.
+# 삼성 서버에서 원하는 앱을 다운로드하기 위한 URL을 반환합니다.
 GET_GALAXY_STORE_DOWNLOAD_URL()
 {
     _CHECK_NON_EMPTY_PARAM "PACKAGE" "$1" || return 1
@@ -85,11 +85,11 @@ GET_GALAXY_STORE_DOWNLOAD_URL()
     SYSTEMID="$(date "+%s")"
 
     if [ ! "$OS" ]; then
-        # Fallback to Android 16
+        # Android 16으로 대체
         OS="36"
     fi
     if [ ! "$ONEUI" ]; then
-        # Fallback to One UI 8.0
+        # One UI 8.0으로 대체
         ONEUI="80000"
     fi
 
@@ -128,12 +128,12 @@ GET_GALAXY_STORE_DOWNLOAD_URL()
         fi
     done
 
-    LOGE "No download URI found for app \"$PACKAGE\""
+    LOGE "\"$PACKAGE\" 앱의 다운로드 URI를 찾을 수 없습니다"
     return 1
 }
 
 # GET_FLOATING_FEATURE_CONFIG "<file>" "<config>"
-# Returns the supplied config value, file can be omitted.
+# 제공된 설정 값을 반환하며, 파일은 생략할 수 있습니다.
 GET_FLOATING_FEATURE_CONFIG()
 {
     local FILE
@@ -149,7 +149,7 @@ GET_FLOATING_FEATURE_CONFIG()
     local CONFIG="$1"
 
     if [ ! -f "$FILE" ]; then
-        LOGE "File not found: ${FILE//$WORK_DIR/}"
+        LOGE "파일이 존재하지 않습니다: ${FILE//$WORK_DIR/}"
         return 1
     fi
 
@@ -157,7 +157,7 @@ GET_FLOATING_FEATURE_CONFIG()
 }
 
 # HEX_PATCH "<file>" "<old pattern>" "<new pattern>"
-# Applies the supplied hex patch to the desired file.
+# 지정된 파일에 16진수(hex) 패치를 적용합니다.
 HEX_PATCH()
 {
     _CHECK_NON_EMPTY_PARAM "FILE" "$1" || return 1
@@ -169,7 +169,7 @@ HEX_PATCH()
     local TO="$3"
 
     if [ ! -f "$FILE" ]; then
-        LOGE "File not found: ${FILE//$WORK_DIR/}"
+        LOGE "파일이 존재하지 않습니다: ${FILE//$WORK_DIR/}"
         return 1
     fi
 
@@ -180,16 +180,16 @@ HEX_PATCH()
     TO="$(tr "[:upper:]" "[:lower:]" <<< "$TO")"
 
     if ! xxd -p -c 0 "$FILE" | grep -q "$FROM"; then
-        LOGE "No \"$FROM\" match in ${FILE//$WORK_DIR/}"
+        LOGE "${FILE//$WORK_DIR/}에서 \"$FROM\"과 일치하는 항목이 없습니다"
         return 1
     fi
 
     if [[ "$(echo -n "$FROM" | wc -c)" != "$(echo -n "$TO" | wc -c)" ]]; then
-        LOGE "Byte strings length must be equal"
+        LOGE "바이트 문자열의 길이가 동일해야 합니다"
         return 1
     fi
 
-    LOG "- Patching \"$FROM\" to \"$TO\" in ${FILE//$WORK_DIR/}"
+    LOG "- ${FILE//$WORK_DIR/}에서 \"$FROM\"을(를) \"$TO\"(으)로 패치 중"
     xxd -p -c 0 "$FILE" | sed "s/$FROM/$TO/" | xxd -r -p > "$FILE.tmp"
     mv "$FILE.tmp" "$FILE"
 
@@ -197,8 +197,8 @@ HEX_PATCH()
 }
 
 # SET_FLOATING_FEATURE_CONFIG "<config>" "<value>"
-# Sets the supplied config to the desired value.
-# "-d" or "--delete" can be passed as value to delete the config.
+# 제공된 설정을 원하는 값으로 지정합니다.
+# 설정을 삭제하려면 값으로 "-d" 또는 "--delete"를 전달할 수 있습니다.
 SET_FLOATING_FEATURE_CONFIG()
 {
     _CHECK_NON_EMPTY_PARAM "CONFIG" "$1" || return 1
@@ -209,20 +209,20 @@ SET_FLOATING_FEATURE_CONFIG()
     local FILE="$WORK_DIR/system/system/etc/floating_feature.xml"
 
     if [ ! -f "$FILE" ]; then
-        LOGE "File not found: ${FILE//$WORK_DIR/}"
+        LOGE "파일이 존재하지 않습니다: ${FILE//$WORK_DIR/}"
         return 1
     fi
 
     if grep -q "<$CONFIG>" "$FILE"; then
         if [[ "$VALUE" == "-d" ]] || [[ "$VALUE" == "--delete" ]]; then
-            LOG "- Deleting \"$CONFIG\" config in /system/system/etc/floating_feature.xml"
+            LOG "- /system/system/etc/floating_feature.xml에서 \"$CONFIG\" 설정 삭제 중"
             sed -i "/<$CONFIG>/d" "$FILE"
         else
-            LOG "- Replacing \"$CONFIG\" config with \"$VALUE\" in /system/system/etc/floating_feature.xml"
+            LOG "- /system/system/etc/floating_feature.xml에서 \"$CONFIG\" 설정을 \"$VALUE\"(으)로 교체 중"
             sed -i "$(sed -n "/<${CONFIG}>/=" "$FILE") c\ \ \ \ <${CONFIG}>${VALUE}</${CONFIG}>" "$FILE"
         fi
     elif [[ "$VALUE" != "-d" ]] && [[ "$VALUE" != "--delete" ]]; then
-        LOG "- Adding \"$CONFIG\" config with \"$VALUE\" in /system/system/etc/floating_feature.xml"
+        LOG "- /system/system/etc/floating_feature.xml에 \"$CONFIG\" 설정을 \"$VALUE\" 값으로 추가 중"
         sed -i "/<\/SecFloatingFeatureSet>/d" "$FILE"
         if ! grep -q "Added by scripts" "$FILE"; then
             echo "    <!-- Added by scripts/utils/module_utils.sh -->" >> "$FILE"
@@ -235,7 +235,7 @@ SET_FLOATING_FEATURE_CONFIG()
 }
 
 # SET_PROP_IF_DIFF "<partition>" "<prop>" "<value>"
-# Calls SET_PROP if the current prop value does not match, partition name CANNOT be omitted.
+# 현재 prop 값이 일치하지 않는 경우 SET_PROP을 호출하며, 파티션 이름은 생략할 수 없습니다.
 SET_PROP_IF_DIFF()
 {
     _CHECK_NON_EMPTY_PARAM "PARTITION" "$1" || return 1
@@ -247,7 +247,7 @@ SET_PROP_IF_DIFF()
     local EXPECTED="$3"
 
     if ! IS_VALID_PARTITION_NAME "$PARTITION"; then
-        LOGE "\"$PARTITION\" is not a valid partition name"
+        LOGE "\"$PARTITION\"은(는) 유효한 파티션 이름이 아닙니다"
         return 1
     fi
 

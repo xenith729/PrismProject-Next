@@ -22,7 +22,7 @@ _GET_PARTITION_SIZE()
 # ]
 
 # GET_DEVICE_FROM_MOUNTPOINT <mountpoint>
-# Returns the device path for the supplied mountpoint.
+# 제공된 마운트 포인트에 대한 디바이스 경로를 반환합니다.
 GET_DEVICE_FROM_MOUNTPOINT()
 {
     _CHECK_NON_EMPTY_PARAM "MOUNTPOINT" "$1" || return 1
@@ -38,7 +38,7 @@ GET_DEVICE_FROM_MOUNTPOINT()
         fi
     fi
     if [ ! -f "$FSTAB_FILE" ]; then
-        LOGE "File not found: target/$TARGET_CODENAME/installer/recovery.fstab"
+        LOGE "파일이 존재하지 않습니다: target/$TARGET_CODENAME/installer/recovery.fstab"
         exit 1
     fi
 
@@ -57,7 +57,7 @@ GET_DEVICE_FROM_MOUNTPOINT()
             elif [[ "$MOUNTPOINT" == "/system" ]]; then
                 GET_DEVICE_FROM_MOUNTPOINT "/"
             else
-                LOGW "No entry for \"$MOUNTPOINT\" found in target fstab"
+                LOGW "타겟 fstab에서 \"$MOUNTPOINT\"에 대한 항목을 찾을 수 없습니다."
                 exit 1
             fi
         else
@@ -67,7 +67,7 @@ GET_DEVICE_FROM_MOUNTPOINT()
 }
 
 # PRINT_ASSERTIONS <info>
-# Returns the assertions code text to be used in the updater-script file.
+# updater-script 파일에 사용될 코드 텍스트를 반환합니다.
 PRINT_ASSERTIONS()
 {
     _CHECK_NON_EMPTY_PARAM "BUILD_INFO" "$1" || return 1
@@ -99,7 +99,7 @@ PRINT_ASSERTIONS()
     fi
 
     if [ ! -d "$SRC_DIR/target/$DEVICE" ]; then
-        LOGE "Folder not found: target/$DEVICE"
+        LOGE "폴더가 존재하지 않습니다: target/$DEVICE"
         return 1
     fi
 
@@ -109,8 +109,8 @@ PRINT_ASSERTIONS()
 }
 
 # PRINT_BUILD_INFO <info> [info]
-# Returns the text to be used in the build_info.txt file.
-# Both source and target info can be passed for incremental zips.
+# build_info.txt 파일에 사용될 텍스트를 반환합니다.
+# 증분 ZIP의 경우 소스 정보와 타겟 정보를 모두 전달할 수 있습니다.
 PRINT_BUILD_INFO()
 {
     local SOURCE_BUILD_INFO
@@ -143,7 +143,7 @@ PRINT_BUILD_INFO()
 }
 
 # PRINT_HEADER <info>
-# Returns the header text to be used in the updater-script file.
+# updater-script 파일에 사용될 헤더 텍스트를 반환합니다.
 PRINT_HEADER()
 {
     _CHECK_NON_EMPTY_PARAM "BUILD_INFO" "$1" || return 1
@@ -177,9 +177,10 @@ PRINT_HEADER()
     echo    'ui_print(" ");'
     PRINT_SEPARATOR
     echo -n 'ui_print("'
-    echo -n "UN1CA $ROM_VERSION for $TARGET_NAME"
+    echo -n "PrismProject-Next $ROM_VERSION for $TARGET_NAME"
     echo    '");'
-    echo    'ui_print("Coded by salvo_giangri @XDAforums");'
+    echo    'ui_print("PrismProject-Next developed by Xenith");'
+    echo    'ui_print("Build system coded by salvo_giangri @XDAforums");'
     PRINT_SEPARATOR
     echo -n 'ui_print("'
     echo -n "One UI version: $ONEUI_VERSION"
@@ -194,15 +195,15 @@ PRINT_HEADER()
 }
 
 # PRINT_SEPARATOR
-# Returns the separator text to be used in the updater-script file.
+# updater-script 파일에 사용될 분할 텍스트를 반환합니다.
 PRINT_SEPARATOR()
 {
     echo 'ui_print("****************************************");'
 }
 
 # SIGN_IMAGE_WITH_AVB <file>
-# Signs the supplied image with avbtool if not AVB-signed already.
-# The TARGET_${PARTITION_NAME}_PARTITION_SIZE environment variable is required to be set.
+# avbtool을 사용하여 AVB 서명이 없는 경우 제공된 이미지를 서명합니다.
+# TARGET_${PARTITION_NAME}_PARTITION_SIZE 변수가 설정되어 있어야 합니다.
 SIGN_IMAGE_WITH_AVB()
 {
     _CHECK_NON_EMPTY_PARAM "FILE" "$1" || return 1
@@ -225,7 +226,7 @@ SIGN_IMAGE_WITH_AVB()
         CMD+="--algorithm \"SHA256_RSA4096\" "
         CMD+="--key \"$SRC_DIR/security/avb/testkey_rsa4096.pem\""
 
-        LOG "- Signing image with AVB"
+        LOG "- AVB로 이미지 서명 중..."
         EVAL "$CMD" || return 1
     fi
 }

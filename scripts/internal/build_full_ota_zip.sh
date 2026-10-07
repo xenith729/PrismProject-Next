@@ -208,7 +208,7 @@ GENERATE_UPDATER_SCRIPT()
 # ]
 
 if [ "$#" != "2" ]; then
-    echo "Usage: build_full_ota_zip <file> <output>" >&2
+    echo "사용 예제: build_full_ota_zip <파일> <출력>" >&2
     exit 1
 fi
 
@@ -216,7 +216,7 @@ TARGET_ZIP="$1"
 OUTPUT_FILE="$2"
 
 if ! unzip -l "$TARGET_ZIP" | grep -q "build_info.txt" || unzip -l "$TARGET_ZIP" | grep -q "META-INF"; then
-    LOGE "File not valid: ${TARGET_ZIP//$SRC_DIR\//}"
+    LOGE "파일이 유효하지 않습니다: ${TARGET_ZIP//$SRC_DIR\//}"
     exit 1
 fi
 
@@ -224,7 +224,7 @@ fi
 mkdir -p "$TMP_DIR/META-INF/com/google/android"
 cp -a "$SRC_DIR/prebuilts/bootable/deprecated-ota/updater" "$TMP_DIR/META-INF/com/google/android/update-binary"
 
-LOG "- Extracting target files"
+LOG "- 타겟 파일 압축 해제 중..."
 EVAL "unzip -o \"$TARGET_ZIP\" -d \"$TMP_DIR\"" || exit 1
 
 BUILD_INFO="$(cat "$TMP_DIR/build_info.txt")"
@@ -232,14 +232,14 @@ rm -f "$TMP_DIR/build_info.txt"
 
 TARGET_CODENAME="$(grep "^device" <<< "$BUILD_INFO" | cut -d "=" -f 2 -s)"
 if [ ! -d "$SRC_DIR/target/$TARGET_CODENAME" ]; then
-    LOGE "Folder not found: target/$TARGET_CODENAME"
+    LOGE "폴더가 존재하지 않습니다: target/$TARGET_CODENAME"
     exit 1
 fi
 
 TARGET_USE_DYNAMIC_PARTITIONS="$(grep "^use_dynamic_partitions" <<< "$BUILD_INFO" | cut -d "=" -f 2 -s)"
 
 if $TARGET_USE_DYNAMIC_PARTITIONS; then
-    LOG "- Generating dynamic_partitions_op_list"
+    LOG "- dynamic_partitions_op_list 생성 중..."
     GENERATE_OP_LIST
 fi
 
@@ -248,41 +248,41 @@ for p in $PARTITIONS_LIST; do
         continue
     fi
 
-    LOG "- Converting $p.img to $p.new.dat"
+    LOG "- $p.img을 $p.new.dat로 변환 중..."
     EVAL "img2sdat -o \"$TMP_DIR\" --tgt-block-map \"$TMP_DIR/$p.map\" \"$TMP_DIR/$p.img\"" || exit 1
     rm -f "$TMP_DIR/$p.img" "$TMP_DIR/$p.map"
 
     if ! $DEBUG; then
-        LOG "- Compressing $p.new.dat"
+        LOG "- $p.new.dat 압축 중..."
         # https://android.googlesource.com/platform/build/+/refs/tags/android-15.0.0_r1/tools/releasetools/common.py#3585
         EVAL "brotli --quality=6 --output=\"$TMP_DIR/$p.new.dat.br\" \"$TMP_DIR/$p.new.dat\"" || exit 1
         rm -f "$TMP_DIR/$p.new.dat"
     fi
 done
 
-LOG "- Generating updater-script"
+LOG "- updater-script 생성 중..."
 GENERATE_UPDATER_SCRIPT
 
-LOG "- Generating build_info.txt"
+LOG "- build_info.txt 생성 중..."
 PRINT_BUILD_INFO "$BUILD_INFO" > "$TMP_DIR/build_info.txt" || exit 1
 
-LOG "- Generating OTA metadata"
+LOG "- OTA 메타데이터 생성 중..."
 GENERATE_OTA_METADATA
 
 if [ -d "$SRC_DIR/target/$TARGET_CODENAME/installer/root" ]; then
-    LOG "- Copying target custom install files"
+    LOG "- 타겟 커스텀 설치 파일 복사 중..."
     EVAL "cp -a \"$SRC_DIR/target/$TARGET_CODENAME/installer/root/\"* \"$TMP_DIR\"" || exit 1
 fi
 
 if [ -f "$SRC_DIR/target/$TARGET_CODENAME/installer/customize.sh" ]; then
-    LOG_STEP_IN "- Running target custom install script"
+    LOG_STEP_IN "- 타겟 커스텀 설치 스크립트 실행 중..."
     (
     . "$SRC_DIR/target/$TARGET_CODENAME/installer/customize.sh"
     ) || exit 1
     LOG_STEP_OUT
 fi
 
-LOG "- Creating zip"
+LOG "- zip 생성 중..."
 EVAL "rm -f \"$TMP_DIR/rom.zip\"" || exit 1
 # https://android.googlesource.com/platform/build/+/refs/tags/android-15.0.0_r1/tools/releasetools/common.py#3601
 # https://android.googlesource.com/platform/build/+/refs/tags/android-15.0.0_r1/tools/releasetools/common.py#3609
@@ -292,7 +292,7 @@ EVAL "cd \"$TMP_DIR\" && 7z a -tzip -mx=0 -mmt=$(nproc) $TMP_DIR/rom.zip -r *.pa
 EVAL "cd \"$TMP_DIR\" && 7z a -tzip -mx=3 -mmt=$(nproc) $TMP_DIR/rom.zip -r * -xr!META-INF/com/android/* -x!*.new.dat.br -x!*.patch.dat -x!rom.zip" || exit 1
 
 if ! $DEBUG || $ROM_IS_OFFICIAL; then
-    LOG "- Signing zip"
+    LOG "- zip 서명 중..."
     EVAL "signapk -w \"$PUBLIC_KEY_PATH\" \"$PRIVATE_KEY_PATH\" \"$TMP_DIR/rom.zip\" \"$OUTPUT_FILE\"" || exit 1
     rm -f "$TMP_DIR/rom.zip"
 else

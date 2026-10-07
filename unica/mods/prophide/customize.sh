@@ -22,7 +22,7 @@ PUB_KEY_ADDR_EXTRACT() {
 
 VBIMG="$FW_DIR/$(cut -d "/" -f 1 -s <<< "$TARGET_FIRMWARE")_$(cut -d "/" -f 2 -s <<< "$TARGET_FIRMWARE")/avb/vbmeta.img"
 if [ ! -f "$VBIMG" ]; then
-    ABORT "File not found: ${VBIMG//$SRC_DIR\//}"
+    ABORT "파일이 존재하지 않습니다: ${VBIMG//$SRC_DIR\//}"
 fi
 
 AVBINFO="$(avbtool info_image --image "$VBIMG")"

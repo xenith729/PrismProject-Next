@@ -1,7 +1,7 @@
 From 948b2678a396c171f1740ed8c39b6a99c5e06d13 Mon Sep 17 00:00:00 2001
 From: Fede2782 <78815152+Fede2782@users.noreply.github.com>
 Date: Mon, 17 Aug 2026 00:13:01 +0200
-Subject: [PATCH] Add ro.unica.fingerprint in PackagePartitions.FINGERPRINT
+Subject: [PATCH] Add ro.prismproject.fingerprint in PackagePartitions.FINGERPRINT
 
 ---
  smali/android/content/pm/PackagePartitions.smali | 14 ++++++++++++--
@@ -35,7 +35,7 @@ index 44089290..533c9b70 100644
 +
 +    add-int/lit8 v1, v1, 0x1
 +
-+    const-string/jumbo v2, "ro.unica.fingerprint"
++    const-string/jumbo v2, "ro.prismproject.fingerprint"
  
      aput-object v2, v0, v1
  

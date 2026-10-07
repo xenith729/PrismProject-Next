@@ -18,7 +18,7 @@ _CHECK_NON_EMPTY_PARAM()
             echo -n "${FUNCNAME[1]}) " >&2
         fi
 
-        echo -n "$1 is not set!" >&2
+        echo -n "$1 가 설정되지 않았습니다!" >&2
         echo -e '\033[0m' >&2
 
         return 1
@@ -143,7 +143,7 @@ _GET_SELINUX_LABEL()
     esac
 
     if [ ! -f "$FC_FILE" ]; then
-        LOGE "File not found: ${FC_FILE//$WORK_DIR/}"
+        LOGE "파일이 존재하지 않습니다: ${FC_FILE//$WORK_DIR/}"
         return 1
     fi
 
@@ -179,14 +179,14 @@ _HANDLE_SPECIAL_CHARS()
 # ]
 
 # ADD_TO_WORK_DIR <source> <partition> <file/dir> <user> <group> <mode> <label>
-# Adds the supplied file/directory in work dir along with its entries in fs_config/file_context.
+# 제공된 파일/디렉터리를 작업 디렉터리에 추가하고 fs_config/file_context에 해당 항목을 추가합니다.
 #
-# `source` argument can be:
-# - a full path
-# - a string in the following format: "MODEL/CSC" (the folder MUST exist under `out/fw`)
-# - a string with the product name of the desired device's prebuilt blobs (the folder MUST exist under `prebuilts/samsung`)
+# `source` 인수는 다음 중 하나일 수 있습니다:
+# - 전체 경로
+# - "MODEL/CSC" 형식의 문자열 (해당 폴더는 반드시 `out/fw` 아래에 존재해야 함)
+# - 원하는 기기의 prebuilt blob 제품 이름 문자열 (해당 폴더는 반드시 `prebuilts/samsung` 아래에 존재해야 함)
 #
-# `user`/`group`/`mode`/`label`/ arguments can be omitted as long as the respective entry is present in `source`/fs_config and `source`/file_context.
+# `user`/`group`/`mode`/`label` 인수는 `source`/fs_config 및 `source`/file_context에 해당 항목이 있는 경우 생략할 수 있습니다.
 ADD_TO_WORK_DIR()
 {
     _CHECK_NON_EMPTY_PARAM "SOURCE" "$1" || return 1
@@ -210,12 +210,12 @@ ADD_TO_WORK_DIR()
     fi
 
     if [ ! -d "$SOURCE" ]; then
-        LOGE "Folder not found: ${SOURCE//$SRC_DIR\//}"
+        LOGE "폴더가 존재하지 않습니다: ${SOURCE//$SRC_DIR\//}"
         return 1
     fi
 
     if ! IS_VALID_PARTITION_NAME "$PARTITION"; then
-        LOGE "\"$PARTITION\" is not a valid partition name"
+        LOGE "\"$PARTITION\"은(는) 유효한 파티션 이름이 아닙니다"
         return 1
     fi
 
@@ -256,15 +256,15 @@ ADD_TO_WORK_DIR()
 
     if [ ! -e "$SOURCE_FILE" ] && [ ! -L "$SOURCE_FILE" ]; then
         if [ -e "$SOURCE_FILE.00" ]; then
-            LOG "- Adding $(sed -e "s|$WORK_DIR||" -e "s|/\.||" <<< "$TARGET_FILE") from ${SOURCE//$SRC_DIR\//}"
+            LOG "- ${SOURCE//$SRC_DIR\//}(으)로부터 $(sed -e "s|$WORK_DIR||" -e "s|/\.||" <<< "$TARGET_FILE") 추가 중"
             mkdir -p "$(dirname "$TARGET_FILE")"
             EVAL "cat \"$SOURCE_FILE.\"[0-9][0-9] > \"$TARGET_FILE\"" || exit 1
         else
-            LOGE "File not found: ${SOURCE_FILE//$SRC_DIR\//}"
+            LOGE "파일이 존재하지 않습니다: ${SOURCE_FILE//$SRC_DIR\//}"
             return 1
         fi
     else
-        LOG "- Adding $(sed -e "s|$WORK_DIR||" -e "s|/\.||" <<< "$TARGET_FILE") from ${SOURCE//$SRC_DIR\//}"
+        LOG "- ${SOURCE//$SRC_DIR\//}(으)로부터 $(sed -e "s|$WORK_DIR||" -e "s|/\.||" <<< "$TARGET_FILE") 추가 중"
         if [ ! -d "$SOURCE_FILE" ]; then
             mkdir -p "$(dirname "$TARGET_FILE")"
         else
@@ -283,7 +283,7 @@ ADD_TO_WORK_DIR()
         elif grep -q -F "$ENTRY " "$SOURCE/fs_config-$PARTITION" 2> /dev/null; then
             grep -F "$ENTRY " "$SOURCE/fs_config-$PARTITION" >> "$WORK_DIR/configs/fs_config-$PARTITION"
         else
-            LOGW "No fs_config entry found for \"$ENTRY\" in \"${SOURCE//$SRC_DIR\//}\". Using default values"
+            LOGW "\"${SOURCE//$SRC_DIR\//}\"에서 \"$ENTRY\"에 대한 fs_config 항목을 찾을 수 없습니다. 기본값을 사용합니다"
 
             USER=0
             GROUP=0
@@ -303,7 +303,7 @@ ADD_TO_WORK_DIR()
         elif grep -q -F "/$(_HANDLE_SPECIAL_CHARS "$ENTRY") " "$SOURCE/file_context-$PARTITION" 2> /dev/null; then
             grep -F "/$(_HANDLE_SPECIAL_CHARS "$ENTRY") " "$SOURCE/file_context-$PARTITION" >> "$WORK_DIR/configs/file_context-$PARTITION"
         else
-            LOGW "No file_context entry found for \"$ENTRY\" in \"${SOURCE//$SRC_DIR\//}\". Using default value"
+            LOGW "\"${SOURCE//$SRC_DIR\//}\"에서 \"$ENTRY\"에 대한 file_context 항목을 찾을 수 없습니다. 기본값을 사용합니다"
 
             LABEL="$(_GET_SELINUX_LABEL "$PARTITION" "/$ENTRY")"
 
@@ -325,7 +325,7 @@ ADD_TO_WORK_DIR()
                 if grep -q -F "$f " "$SOURCE/fs_config-$PARTITION" 2> /dev/null; then
                     grep -F "$f " "$SOURCE/fs_config-$PARTITION" >> "$WORK_DIR/configs/fs_config-$PARTITION"
                 else
-                    LOGW "No fs_config entry found for \"$f\" in \"${SOURCE//$SRC_DIR\//}\". Using default values"
+                    LOGW "\"${SOURCE//$SRC_DIR\//}\"에서 \"$f\"에 대한 fs_config 항목을 찾을 수 없습니다. 기본값을 사용합니다"
 
                     USER=0
                     GROUP=0
@@ -343,7 +343,7 @@ ADD_TO_WORK_DIR()
                 if grep -q -F "/$(_HANDLE_SPECIAL_CHARS "$f") " "$SOURCE/file_context-$PARTITION" 2> /dev/null; then
                     grep -F "/$(_HANDLE_SPECIAL_CHARS "$f") " "$SOURCE/file_context-$PARTITION" >> "$WORK_DIR/configs/file_context-$PARTITION"
                 else
-                    LOGW "No file_context entry found for \"$f\" in \"${SOURCE//$SRC_DIR\//}\". Using default value"
+                    LOGW "\"${SOURCE//$SRC_DIR\//}\"에서 \"$f\"에 대한 file_context 항목을 찾을 수 없습니다. 기본값을 사용합니다"
 
                     LABEL="$(_GET_SELINUX_LABEL "$PARTITION" "/$f")"
 
@@ -363,7 +363,7 @@ ADD_TO_WORK_DIR()
                 if grep -q -F "$TMP " "$SOURCE/fs_config-$PARTITION" 2> /dev/null; then
                     grep -F "$TMP " "$SOURCE/fs_config-$PARTITION" >> "$WORK_DIR/configs/fs_config-$PARTITION"
                 else
-                    LOGW "No fs_config entry found for \"$TMP\" in \"${SOURCE//$SRC_DIR\//}\". Using default values"
+                    LOGW "\"${SOURCE//$SRC_DIR\//}\"에서 \"$TMP\"에 대한 fs_config 항목을 찾을 수 없습니다. 기본값을 사용합니다"
 
                     USER=0
                     GROUP=0
@@ -378,7 +378,7 @@ ADD_TO_WORK_DIR()
                 if grep -q -F "/$(_HANDLE_SPECIAL_CHARS "$TMP") " "$SOURCE/file_context-$PARTITION" 2> /dev/null; then
                     grep -F "/$(_HANDLE_SPECIAL_CHARS "$TMP") " "$SOURCE/file_context-$PARTITION" >> "$WORK_DIR/configs/file_context-$PARTITION"
                 else
-                    LOGW "No file_context entry found for \"$TMP\" in \"${SOURCE//$SRC_DIR\//}\". Using default value"
+                    LOGW "\"${SOURCE//$SRC_DIR\//}\"에서 \"$TMP\"에 대한 file_context 항목을 찾을 수 없습니다. 기본값을 사용합니다"
 
                     LABEL="$(_GET_SELINUX_LABEL "$PARTITION" "/$TMP")"
 
@@ -394,7 +394,7 @@ ADD_TO_WORK_DIR()
 }
 
 # DELETE_FROM_WORK_DIR "<partition>" "<file/dir>"
-# Deletes the supplied file/directory from work dir along with its entries in fs_config/file_context.
+# 작업 디렉터리 및 fs_config/file_context에서 제공된 파일/디렉터리 항목을 삭제합니다.
 DELETE_FROM_WORK_DIR()
 {
     _CHECK_NON_EMPTY_PARAM "PARTITION" "$1" || return 1
@@ -404,7 +404,7 @@ DELETE_FROM_WORK_DIR()
     local FILE="$2"
 
     if ! IS_VALID_PARTITION_NAME "$PARTITION"; then
-        LOGE "\"$PARTITION\" is not a valid partition name"
+        LOGE "\"$PARTITION\"은(는) 유효한 파티션 이름이 아닙니다"
         return 1
     fi
 
@@ -433,14 +433,14 @@ DELETE_FROM_WORK_DIR()
     FILE_PATH+="/$FILE"
 
     if [ ! -e "$FILE_PATH" ] && [ ! -L "$FILE_PATH" ]; then
-        LOGW "File not found: ${FILE_PATH//$WORK_DIR/}"
+        LOGW "파일이 존재하지 않습니다: ${FILE_PATH//$WORK_DIR/}"
         return 0
     fi
 
     local IS_DIR=false
     [ -d "$FILE_PATH" ] && IS_DIR=true
 
-    LOG "- Deleting ${FILE_PATH//$WORK_DIR/}"
+    LOG "- ${FILE_PATH//$WORK_DIR/} 삭제 중"
     rm -rf "$FILE_PATH"
 
     local PATTERN="${FILE//\//\\/}"
@@ -469,7 +469,7 @@ DELETE_FROM_WORK_DIR()
 }
 
 # DOWNLOAD_FILE "<url>" "<output path>"
-# Downloads the file from the provided URL and stores it in the desired output path.
+# 제공된 URL에서 파일을 다운로드하여 지정된 출력 경로에 저장합니다.
 DOWNLOAD_FILE()
 {
     _CHECK_NON_EMPTY_PARAM "URL" "$1" || return 1
@@ -484,7 +484,7 @@ DOWNLOAD_FILE()
 }
 
 # EVAL <cmd>
-# Executes the provided command and prints its output if it returns a non-zero exit code.
+# 제공된 명령을 실행하고 0이 아닌 종료 코드를 반환하는 경우 출력을 출력합니다.
 EVAL()
 {
     _CHECK_NON_EMPTY_PARAM "CMD" "$1" || return 1
@@ -495,7 +495,7 @@ EVAL()
     OUT="$(eval "$CMD" 2>&1)"
     # shellcheck disable=SC2181,SC2291
     if [ $? -ne 0 ]; then
-        LOGE "Command returned a non-zero exit code\n"
+        LOGE "명령이 0이 아닌 종료 코드를 반환했습니다\n"
         echo -e    '\033[0;31m'"$CMD"'\033[0m\n' >&2
         echo -n -e '\033[0;33m' >&2
         echo -n    "$OUT" >&2
@@ -507,7 +507,7 @@ EVAL()
 }
 
 # GET_PROP "<partition>/<file>" "<prop>"
-# Returns the supplied prop value, partition/file can be omitted.
+# 제공된 prop 값을 반환하며, 파티션/파일은 생략할 수 있습니다.
 GET_PROP()
 {
     local FILES
@@ -529,7 +529,7 @@ GET_PROP()
 }
 
 # IS_SPARSE_IMAGE <file>
-# Returns whether or not the supplied file is a valid sparse image.
+# 제공된 파일이 유효한 스파스(sparse) 이미지인지 여부를 반환합니다.
 IS_SPARSE_IMAGE()
 {
     _CHECK_NON_EMPTY_PARAM "FILE" "$1" || exit 1
@@ -537,7 +537,7 @@ IS_SPARSE_IMAGE()
     local FILE="$1"
 
     if [ ! -f "$FILE" ]; then
-        LOGE "File not found: ${FILE//$SRC_DIR\//}"
+        LOGE "파일이 존재하지 않습니다: ${FILE//$SRC_DIR\//}"
         return 1
     fi
 
@@ -546,7 +546,7 @@ IS_SPARSE_IMAGE()
 }
 
 # IS_VALID_PARTITION_NAME <partition>
-# Returns whether or not the supplied partition name is valid.
+# 제공된 파티션 이름이 유효한지 여부를 반환합니다.
 IS_VALID_PARTITION_NAME()
 {
     local PARTITION="$1"
@@ -557,7 +557,7 @@ IS_VALID_PARTITION_NAME()
 }
 
 # READ_BYTES_AT <file> <offset> <bytes>
-# Reads the desired amount of bytes from the supplied file.
+# 제공된 파일에서 원하는 양의 바이트를 읽습니다.
 READ_BYTES_AT()
 {
     _CHECK_NON_EMPTY_PARAM "FILE" "$1" || return 1
@@ -569,18 +569,18 @@ READ_BYTES_AT()
     local BYTES="$3"
 
     if [ ! -f "$FILE" ]; then
-        LOGE "File not found: ${FILE//$SRC_DIR\//}"
+        LOGE "파일이 존재하지 않습니다: ${FILE//$SRC_DIR\//}"
         return 1
     fi
 
     local FILE_SIZE
     FILE_SIZE="$(wc -c "$FILE" | cut -d " " -f 1)"
     if ! [[ "$OFFSET" =~ ^[+-]?[0-9]+$ ]] || [[ "$OFFSET" -gt "$FILE_SIZE" ]]; then
-        LOGE "Offset value not valid: $OFFSET"
+        LOGE "오프셋 값이 유효하지 않습니다: $OFFSET"
         return 1
     fi
     if ! [[ "$BYTES" =~ ^[+-]?[0-9]+$ ]] || [[ "$BYTES" -gt "$((FILE_SIZE - OFFSET))" ]]; then
-        LOGE "Bytes value not valid: $BYTES"
+        LOGE "바이트 값이 유효하지 않습니다: $BYTES"
         return 1
     fi
 
@@ -597,7 +597,7 @@ READ_BYTES_AT()
 }
 
 # SET_METADATA <partition> <file/dir> <user> <group> <mode> <label>
-# Adds the supplied file/directory entry attrs in fs_config/file_context.
+# fs_config/file_context에 제공된 파일/디렉터리 항목의 속성을 추가합니다.
 SET_METADATA()
 {
     _CHECK_NON_EMPTY_PARAM "PARTITION" "$1" || return 1
@@ -615,7 +615,7 @@ SET_METADATA()
     local LABEL="$6"
 
     if ! IS_VALID_PARTITION_NAME "$PARTITION"; then
-        LOGE "\"$PARTITION\" is not a valid partition name"
+        LOGE "\"$PARTITION\"은(는) 유효한 파티션 이름이 아닙니다"
         return 1
     fi
 
@@ -625,7 +625,7 @@ SET_METADATA()
 
     [ "$PARTITION" != "system" ] && [[ "$ENTRY" != "$PARTITION/"* ]] && ENTRY="$PARTITION/$ENTRY"
 
-    LOG "- Adding metadata for /$ENTRY (uid:$USER gid:$GROUP mode:$MODE selabel:$LABEL)"
+    LOG "- /$ENTRY 메타데이터 추가 중 (uid:$USER gid:$GROUP mode:$MODE selabel:$LABEL)"
 
     local PATTERN
     PATTERN="${ENTRY//\//\\/}"
@@ -644,8 +644,8 @@ SET_METADATA()
 }
 
 # SET_PROP "<partition>" "<prop>" "<value>"
-# Sets the supplied prop to the desired value, partition name CANNOT be omitted.
-# "-d" or "--delete" can be passed as value to delete the prop.
+# 제공된 prop을 원하는 값으로 설정하며, 파티션 이름은 생략할 수 없습니다.
+# prop을 삭제하려면 값으로 "-d" 또는 "--delete"를 전달할 수 있습니다.
 SET_PROP()
 {
     _CHECK_NON_EMPTY_PARAM "PARTITION" "$1" || return 1
@@ -656,7 +656,7 @@ SET_PROP()
     local VALUE="$3"
 
     if ! IS_VALID_PARTITION_NAME "$PARTITION"; then
-        LOGE "\"$PARTITION\" is not a valid partition name"
+        LOGE "\"$PARTITION\"은(는) 유효한 파티션 이름이 아닙니다"
         return 1
     fi
 
@@ -666,10 +666,10 @@ SET_PROP()
 
         while IFS= read -r f; do
             if [[ "$VALUE" == "-d" ]] || [[ "$VALUE" == "--delete" ]]; then
-                LOG "- Deleting \"$PROP\" prop in ${f//$WORK_DIR/}"
+                LOG "- ${f//$WORK_DIR/}에서 \"$PROP\" 프롭 삭제 중"
                 sed -i "/^$PROP/d" "$f"
             else
-                LOG "- Replacing \"$PROP\" prop with \"$VALUE\" in ${f//$WORK_DIR/}"
+                LOG "- ${f//$WORK_DIR/}에서 \"$PROP\" 프롭을 \"$VALUE\"(으)로 교체 중"
 
                 local LINES
                 LINES="$(sed -n "/^${PROP}\b/=" "$f")"
@@ -713,11 +713,11 @@ SET_PROP()
         esac
 
         if [ ! -f "$FILE" ]; then
-            LOGW "File not found: ${FILE//$WORK_DIR/}"
+            LOGW "파일이 존재하지 않습니다: ${FILE//$WORK_DIR/}"
             return 0
         fi
 
-        LOG "- Adding \"$PROP\" prop with \"$VALUE\" in ${FILE//$WORK_DIR/}"
+        LOG "- ${FILE//$WORK_DIR/}에 \"$PROP\" 프롭을 \"$VALUE\" 값으로 추가 중"
         if ! grep -q "Added by scripts" "$FILE"; then
             echo "# Added by scripts/utils/module_utils.sh" >> "$FILE"
         fi

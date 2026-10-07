@@ -33,7 +33,7 @@ _GET_SRC_DIR()
 
 _PRINT_USAGE()
 {
-    echo "Usage: source buildenv.sh [--debug] <target>" >&2
+    echo "사용 예제: source buildenv.sh [--debug] <target>" >&2
     echo "Available devices:" >&2
     printf '%s\n' "${TARGETS[@]}" >&2
 }
@@ -121,7 +121,7 @@ while [[ "$1" == "-"* ]]; do
         _PRINT_USAGE
         return 0
     else
-        echo "Unknown option: $1" >&2
+        echo "알 수 없는 옵션입니다: $1" >&2
         _PRINT_USAGE
         return 1
     fi

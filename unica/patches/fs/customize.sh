@@ -25,7 +25,7 @@ if [ -f "$WORK_DIR/kernel/vendor_boot.img" ]; then
     BOOT_FILE="vendor_boot.img"
 fi
 if [ ! -f "$WORK_DIR/kernel/$BOOT_FILE" ]; then
-    ABORT "File not found: ${WORK_DIR//$SRC_DIR\//}/kernel/$BOOT_FILE"
+    ABORT "파일이 존재하지 않습니다: ${WORK_DIR//$SRC_DIR\//}/kernel/$BOOT_FILE"
 fi
 
 LOG "- Extracting $BOOT_FILE"

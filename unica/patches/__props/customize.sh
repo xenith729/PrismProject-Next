@@ -1,18 +1,18 @@
 # Property identifying the UN1CA version
-SET_PROP "system" "ro.unica.version" "$ROM_VERSION"
-EVAL "echo \"ro.unica.version u:object_r:build_prop:s0 exact string\" >> \"$WORK_DIR/system/system/etc/selinux/plat_property_contexts\""
+SET_PROP "system" "ro.prismproject.version" "$ROM_VERSION"
+EVAL "echo \"ro.prismproject.version u:object_r:build_prop:s0 exact string\" >> \"$WORK_DIR/system/system/etc/selinux/plat_property_contexts\""
 
 # Property identifying the UN1CA build time
-SET_PROP "system" "ro.unica.timestamp" "$ROM_BUILD_TIMESTAMP"
-EVAL "echo \"ro.unica.timestamp u:object_r:build_prop:s0 exact string\" >> \"$WORK_DIR/system/system/etc/selinux/plat_property_contexts\""
+SET_PROP "system" "ro.prismproject.timestamp" "$ROM_BUILD_TIMESTAMP"
+EVAL "echo \"ro.prismproject.timestamp u:object_r:build_prop:s0 exact string\" >> \"$WORK_DIR/system/system/etc/selinux/plat_property_contexts\""
 
 # Property identifying the device codename UN1CA is being built for
-SET_PROP "system" "ro.unica.device" "$TARGET_CODENAME"
-EVAL "echo \"ro.unica.device u:object_r:build_prop:s0 exact string\" >> \"$WORK_DIR/system/system/etc/selinux/plat_property_contexts\""
+SET_PROP "system" "ro.prismproject.device" "$TARGET_CODENAME"
+EVAL "echo \"ro.prismproject.device u:object_r:build_prop:s0 exact string\" >> \"$WORK_DIR/system/system/etc/selinux/plat_property_contexts\""
 
 # Property identifying the UN1CA build as a whole
 # This bundles the properties which aren't already part of Android OS
-# unica/<ro.unica.device>:<MAJOR.MINOR.PATCH from ro.unica.version>/<8-digit commit hash from ro.unica.version><.dirty>/<ro.unica.timestamp>:<user/userdebug>/<release/test>-keys
+# unica/<ro.prismproject.device>:<MAJOR.MINOR.PATCH from ro.prismproject.version>/<8-digit commit hash from ro.prismproject.version><.dirty>/<ro.prismproject.timestamp>:<user/userdebug>/<release/test>-keys
 
 # unica header + the target codename
 FINGERPRINT="unica/${TARGET_CODENAME}:"
@@ -46,7 +46,7 @@ else
     FINGERPRINT+="test-keys"
 fi
 
-SET_PROP "system" "ro.unica.fingerprint" "$FINGERPRINT"
-EVAL "echo \"ro.unica.fingerprint u:object_r:build_prop:s0 exact string\" >> \"$WORK_DIR/system/system/etc/selinux/plat_property_contexts\""
+SET_PROP "system" "ro.prismproject.fingerprint" "$FINGERPRINT"
+EVAL "echo \"ro.prismproject.fingerprint u:object_r:build_prop:s0 exact string\" >> \"$WORK_DIR/system/system/etc/selinux/plat_property_contexts\""
 
 unset FINGERPRINT

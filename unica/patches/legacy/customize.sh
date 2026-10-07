@@ -10,7 +10,7 @@ BACKPORT_SF_PROPS()
     fi
 
     if [ ! -f "$FILE" ]; then
-        ABORT "File not found: ${FILE//$SRC_DIR\//}"
+        ABORT "파일이 존재하지 않습니다: ${FILE//$SRC_DIR\//}"
     fi
 
     local PROP

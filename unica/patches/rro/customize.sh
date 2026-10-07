@@ -21,7 +21,7 @@ while IFS= read -r f; do
 
     if [[ "$f" == "framework-res"* ]]; then
         if [ ! -d "$SRC_DIR/target/$TARGET_CODENAME/overlay" ]; then
-            _LOG "Folder not found: target/$TARGET_CODENAME/overlay"
+            _LOG "폴더가 존재하지 않습니다: target/$TARGET_CODENAME/overlay"
             continue
         fi
         LOG_STEP_IN "- Applying target product overlay"

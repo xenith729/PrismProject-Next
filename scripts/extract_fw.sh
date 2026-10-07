@@ -20,7 +20,7 @@ TMP_DIR="$(mktemp -d)"
 EXTRACT_AVB_BINARIES()
 {
     if FILE_EXISTS_IN_TAR "$BL_TAR" "vbmeta.img" || FILE_EXISTS_IN_TAR "$BL_TAR" "vbmeta.img.lz4"; then
-        LOG_STEP_IN "- Extracting AVB binaries"
+        LOG_STEP_IN "- AVB 바이너리 추출 중..."
 
         mkdir -p "$FW_DIR/${MODEL}_${CSC}/avb"
 
@@ -28,7 +28,7 @@ EXTRACT_AVB_BINARIES()
         mv -f "$FW_DIR/${MODEL}_${CSC}/vbmeta.img" "$FW_DIR/${MODEL}_${CSC}/avb/vbmeta.img"
 
         [ -f "$FW_DIR/${MODEL}_${CSC}/avb/vbmeta_patched.img" ] && rm -rf "$FW_DIR/${MODEL}_${CSC}/avb/vbmeta_patched.img"
-        LOG "- Creating vbmeta_patched.img..."
+        LOG "- vbmeta_patched.img 생성 중..."
         EVAL "cp -a \"$FW_DIR/${MODEL}_${CSC}/avb/vbmeta.img\" \"$FW_DIR/${MODEL}_${CSC}/avb/vbmeta_patched.img\"" || exit 1
         # https://android.googlesource.com/platform/system/core/+/refs/tags/android-15.0.0_r1/fastboot/fastboot.cpp#1129
         EVAL "printf \"\x03\" | dd of=\"$FW_DIR/${MODEL}_${CSC}/avb/vbmeta_patched.img\" bs=1 seek=123 count=1 conv=notrunc" || exit 1
@@ -41,7 +41,7 @@ EXTRACT_KERNEL_BINARIES()
 {
     local FILES="boot.img dt.img dtbo.img init_boot.img vendor_boot.img recovery.img"
 
-    LOG_STEP_IN "- Extracting kernel binaries"
+    LOG_STEP_IN "- 커널 바이너리 추출 중..."
 
     mkdir -p "$FW_DIR/${MODEL}_${CSC}/kernel"
     for f in $FILES; do
@@ -62,7 +62,7 @@ EXTRACT_OS_PARTITIONS()
     # https://android.googlesource.com/platform/build/+/refs/tags/android-15.0.0_r1/tools/releasetools/common.py#131
     local FILES="system.img vendor.img product.img system_ext.img odm.img vendor_dlkm.img odm_dlkm.img system_dlkm.img"
 
-    LOG_STEP_IN "- Extracting OS partitions"
+    LOG_STEP_IN "- OS 파티션 추출 중..."
 
     [ -f "$FW_DIR/${MODEL}_${CSC}/os_partitions_metadata.txt" ] && rm -f "$FW_DIR/${MODEL}_${CSC}/os_partitions_metadata.txt"
 
@@ -70,14 +70,14 @@ EXTRACT_OS_PARTITIONS()
         EXTRACT_FILE_FROM_TAR "$AP_TAR" "super.img" || exit 1
         UNSPARSE_IMAGE "$FW_DIR/${MODEL}_${CSC}/super.img" || exit 1
 
-        LOG "- Unpacking super.img..."
+        LOG "- super.img 압축 해제 중..."
 
         STORE_OS_PARTITION_METADATA "$FW_DIR/${MODEL}_${CSC}/super.img"
 
         # shellcheck disable=SC2013
         for p in $(grep "partition_list" "$FW_DIR/${MODEL}_${CSC}/os_partitions_metadata.txt" | cut -d "=" -f 2 -s); do
             if grep -q "virtual_ab" "$FW_DIR/${MODEL}_${CSC}/os_partitions_metadata.txt"; then
-                # In Virtual A/B devices only the A slot is filled
+                # 가상 A/B 디바이스의 경우, A 파티션만 추출합니다.
                 EVAL "lpunpack -p \"${p}_a\" \"$FW_DIR/${MODEL}_${CSC}/super.img\" \"$FW_DIR/${MODEL}_${CSC}\"" || exit 1
                 mv -f "$FW_DIR/${MODEL}_${CSC}/${p}_a.img" "$FW_DIR/${MODEL}_${CSC}/${p}.img"
             else
@@ -102,14 +102,14 @@ EXTRACT_OS_PARTITIONS()
         [ -f "$FW_DIR/${MODEL}_${CSC}/$f" ] || continue
 
         if ! sudo -n -v &> /dev/null; then
-            LOG "\033[0;33m! Asking user for sudo password\033[0m"
+            LOG "\033[0;33m! 사용자에게 sudo 비밀번호를 요청합니다\033[0m"
             if ! sudo -v 2> /dev/null; then
-                LOGE "Root permissions are required to unpack OS partitions"
+                LOGE "OS 파티션을 추출하기 위해 루트 권한이 필요합니다."
                 exit 1
             fi
         fi
 
-        LOG "- Unpacking $(basename "$f")..."
+        LOG "- $(basename "$f") 압축 해제 중..."
 
         mkdir -p "$FW_DIR/${MODEL}_${CSC}/$PARTITION"
         sudo umount "$FW_DIR/${MODEL}_${CSC}/$f" &> /dev/null
@@ -122,7 +122,7 @@ EXTRACT_OS_PARTITIONS()
         sudo chown -hR "$(whoami):$(whoami)" "$FW_DIR/${MODEL}_${CSC}/$PARTITION"
         [ -d "$FW_DIR/${MODEL}_${CSC}/$PARTITION/lost+found" ] && rm -rf "$FW_DIR/${MODEL}_${CSC}/$PARTITION/lost+found"
 
-        LOG "- Generating fs_config/file_context for $(basename "$f")..."
+        LOG "- $(basename "$f")의 fs_config/file_context 생성 중..."
 
         EVAL "sudo find \"$TMP_DIR\" | sudo xargs -I \"{}\" -P \"$(nproc)\" stat -c \"%n %u %g %a capabilities=0x0\" \"{}\" > \"$FW_DIR/${MODEL}_${CSC}/fs_config-$PARTITION\"" || exit 1
         EVAL "sudo find \"$TMP_DIR\" | sudo xargs -I \"{}\" -P \"$(nproc)\" sh -c 'echo \"\$1 \$(getfattr -n security.selinux --only-values -h --absolute-names \"\$1\")\"' \"sh\" \"{}\" > \"$FW_DIR/${MODEL}_${CSC}/file_context-$PARTITION\"" || exit 1
@@ -139,7 +139,7 @@ EXTRACT_OS_PARTITIONS()
         sed -i -e "s|\.|\\\.|g" -e "s|\+|\\\+|g" -e "s|\[|\\\[|g" \
             -e "s|\]|\\\]|g" -e "s|\*|\\\*|g" "$FW_DIR/${MODEL}_${CSC}/file_context-$PARTITION"
 
-        # TODO a way to determine file capabilities has yet to be found, for now let's set it for the only known files
+        # # TODO: 파일 capability를 확인하는 방법은 아직 찾지 못했으므로, 현재는 알려진 파일에만 설정
         if [ -f "$FW_DIR/${MODEL}_${CSC}/fs_config-system" ]; then
             grep -q "run-as" "$FW_DIR/${MODEL}_${CSC}/fs_config-system" && \
                 sed -i "$(sed -n "/run-as/=" "$FW_DIR/${MODEL}_${CSC}/fs_config-system") s/0x0/0xc0/g" "$FW_DIR/${MODEL}_${CSC}/fs_config-system"
@@ -182,7 +182,7 @@ PREPARE_SCRIPT()
         elif [[ "$1" == "--ignore-target" ]]; then
             IGNORE_TARGET=true
         elif [[ "$1" == "-"* ]]; then
-            LOGE "Unknown option: $1"
+            LOGE "알 수 없는 옵션입니다: $1"
             PRINT_USAGE
             exit 1
         else
@@ -217,10 +217,10 @@ PREPARE_SCRIPT()
 
 PRINT_USAGE()
 {
-    echo "Usage: extract_fw [options] <firmware>" >&2
-    echo " --ignore-source : Skip parsing source firmware flags" >&2
-    echo " --ignore-target : Skip parsing target firmware flags" >&2
-    echo " -f, --force : Force firmware extract" >&2
+    echo "사용 예제: extract_fw [옵션] <펌웨어>" >&2
+    echo " --ignore-source : 소스 펌웨어 플래그 파싱을 건너 뜁니다." >&2
+    echo " --ignore-target : 타겟 펌웨어 플래그 파싱을 건너 뜁니다." >&2
+    echo " -f, --force : 강제로 펌웨어를 추출합니다." >&2
 }
 
 STORE_KERNEL_IMAGE_METADATA()
@@ -228,7 +228,7 @@ STORE_KERNEL_IMAGE_METADATA()
     local FILE="$1"
 
     if [ ! -f "$FILE" ]; then
-        LOGE "File not found: ${FILE//$SRC_DIR\//}"
+        LOGE "파일이 존재하지 않습니다: ${FILE//$SRC_DIR\//}"
         exit 1
     fi
 
@@ -307,7 +307,7 @@ STORE_OS_PARTITION_METADATA()
     local FILE="$1"
 
     if [ ! -f "$FILE" ]; then
-        LOGE "File not found: ${FILE//$SRC_DIR\//}"
+        LOGE "파일이 존재하지 않습니다: ${FILE//$SRC_DIR\//}"
         exit 1
     fi
 
@@ -351,29 +351,29 @@ for i in "${FIRMWARES[@]}"; do
 
     LATEST_FIRMWARE="$(GET_LATEST_FIRMWARE "$MODEL" "$CSC")"
     if [ ! "$LATEST_FIRMWARE" ]; then
-        LOGE "Latest available firmware could not be fetched"
+        LOGE "최신 펌웨어 정보를 불러올 수 없습니다."
         exit 1
     fi
 
-    LOG_STEP_IN "- Processing $MODEL firmware with $CSC CSC"
-    LOG "- Downloaded firmware: $(cat "$ODIN_DIR/${MODEL}_${CSC}/.downloaded" 2> /dev/null)"
-    LOG "- Extracted firmware: $(cat "$FW_DIR/${MODEL}_${CSC}/.extracted" 2> /dev/null)"
-    LOG "- Latest available firmware: $LATEST_FIRMWARE"
+    LOG_STEP_IN "- $MODEL $CSC 펌웨어 작업 중..."
+    LOG "- 다운로드된 펌웨어: $(cat "$ODIN_DIR/${MODEL}_${CSC}/.downloaded" 2> /dev/null)"
+    LOG "- 추출된 펌웨어: $(cat "$FW_DIR/${MODEL}_${CSC}/.extracted" 2> /dev/null)"
+    LOG "- 사용 가능한 최신 펌웨어: $LATEST_FIRMWARE"
 
     LOG_STEP_IN
 
     if ! $FORCE; then
-        # Skip if firmware has been extracted
+        # 펌웨어가 이미 추출된 경우 건너 뜁니다.
         if [ -f "$FW_DIR/${MODEL}_${CSC}/.extracted" ]; then
             if ! COMPARE_SEC_BUILD_VERSION "$(cat "$FW_DIR/${MODEL}_${CSC}/.extracted")" "$LATEST_FIRMWARE"; then
                 if [ -f "$ODIN_DIR/${MODEL}_${CSC}/.downloaded" ] && \
                         ! COMPARE_SEC_BUILD_VERSION "$(cat "$FW_DIR/${MODEL}_${CSC}/.extracted")" "$(cat "$ODIN_DIR/${MODEL}_${CSC}/.downloaded")"; then
-                    LOG "\033[0;33m! A newer firmware has been downloaded, use --force flag if you want to overwrite it\033[0m"
+                    LOG "\033[0;33m! 더 새로운 펌웨어가 다운로드되었습니다, 덮어쓰려면 --force 플래그를 사용하세요\033[0m"
                 else
-                    LOG "\033[0;33m! A newer firmware is available for download\033[0m"
+                    LOG "\033[0;33m! 더 새로운 펌웨어를 다운로드할 수 있습니다\033[0m"
                 fi
             else
-                LOG "\033[0;33m! This firmware has already been extracted\033[0m"
+                LOG "\033[0;33m! 이 펌웨어는 이미 추출되었습니다\033[0m"
             fi
 
             LOG_STEP_OUT; LOG_STEP_OUT
@@ -381,9 +381,9 @@ for i in "${FIRMWARES[@]}"; do
         fi
     fi
 
-    # Abort if firmware has not been downloaded
+    # 펌웨어가 다운로드되지 않은 경우 중단
     if [ ! -f "$ODIN_DIR/${MODEL}_${CSC}/.downloaded" ]; then
-        LOG "\033[0;31m! The firmware has not been downloaded\033[0m"
+        LOG "\033[0;31m! 펌웨어가 다운로드되지 않았습니다\033[0m"
         exit 1
     fi
 
@@ -396,10 +396,10 @@ for i in "${FIRMWARES[@]}"; do
     AP_TAR="$(find "$ODIN_DIR/${MODEL}_${CSC}" -name "AP_$(cut -d "/" -f 1 -s <<< "$DOWNLOADED_FIRMWARE")*.md5" | sort -r | head -n 1)"
 
     if [ ! "$BL_TAR" ]; then
-        LOG "\033[0;31m! No BL tar found\033[0m"
+        LOG "\033[0;31m! BL tar를 찾을 수 없습니다\033[0m"
         exit 1
     elif [ ! "$AP_TAR" ]; then
-        LOG "\033[0;31m! No AP tar found\033[0m"
+        LOG "\033[0;31m! AP tar를 찾을 수 없습니다\033[0m"
         exit 1
     fi
 

@@ -21,17 +21,17 @@ OUTPUT_PATH=""
 BUILD()
 {
     if [ ! -d "$OUTPUT_PATH" ]; then
-        LOGE "Folder not found: ${OUTPUT_PATH//$SRC_DIR\//}"
+        LOGE "폴더가 존재하지 않습니다: ${OUTPUT_PATH//$SRC_DIR\//}"
         exit 1
     fi
 
     LOG "- Building ${INPUT_FILE//$WORK_DIR/}"
 
-    # Copy original META-INF
+    # 원본 META-INF 복사
     mkdir -p "$OUTPUT_PATH/build/apk"
     cp -a "$OUTPUT_PATH/original/META-INF" "$OUTPUT_PATH/build/apk/META-INF"
 
-    # Build APK with --shorten-resource-paths (https://developer.android.com/tools/aapt2#optimize_options)
+    # --shorten-resource-paths와 함께 APK 빌드 (https://developer.android.com/tools/aapt2#optimize_options)
     EVAL "apktool -JXmx${HEAP_SIZE}m b -j \"$THREAD_COUNT\" -p \"$FRAMEWORK_DIR\" -srp \"$OUTPUT_PATH\"" || exit 1
 
     local FILE_NAME
@@ -41,11 +41,11 @@ BUILD()
         local CERT_PREFIX="aosp"
         $ROM_IS_OFFICIAL && CERT_PREFIX="unica"
 
-        LOG "- Signing ${INPUT_FILE//$WORK_DIR/}"
+        LOG "- ${INPUT_FILE//$WORK_DIR/} 서명 중..."
         EVAL "signapk \"$SRC_DIR/security/${CERT_PREFIX}_platform.x509.pem\" \"$SRC_DIR/security/${CERT_PREFIX}_platform.pk8\" \"$OUTPUT_PATH/dist/$FILE_NAME\" \"$OUTPUT_PATH/dist/temp.apk\"" || exit 1
         mv -f "$OUTPUT_PATH/dist/temp.apk" "$OUTPUT_PATH/dist/$FILE_NAME"
     else
-        LOG "- Zipaligning ${INPUT_FILE//$WORK_DIR/}"
+        LOG "- ${INPUT_FILE//$WORK_DIR/} Zipalign 중..."
         EVAL "zipalign -p 4 \"$OUTPUT_PATH/dist/$FILE_NAME\" \"$OUTPUT_PATH/dist/temp\"" || exit 1
         mv -f "$OUTPUT_PATH/dist/temp" "$OUTPUT_PATH/dist/$FILE_NAME"
     fi
@@ -68,29 +68,29 @@ BUILD()
 DECODE()
 {
     if [ ! -f "$INPUT_FILE" ]; then
-        LOGE "File not found: ${INPUT_FILE//$WORK_DIR/}"
+        LOGE "파일이 존재하지 않습니다: ${INPUT_FILE//$WORK_DIR/}"
         exit 1
     elif [ -d "$OUTPUT_PATH" ]; then
         if $FORCE; then
             rm -rf "$OUTPUT_PATH"
         else
-            LOGE "Output directory already exists (${OUTPUT_PATH//$SRC_DIR\//}). Use --force flag if you want to overwrite it."
+            LOGE "출력 디렉토리가 이미 존재합니다. 덮어쓰려면 --force 플래그를 사용하세요: (${OUTPUT_PATH//$SRC_DIR\//})"
             exit 1
         fi
     fi
 
     if [[ "$(READ_BYTES_AT "$INPUT_FILE" "0" "4")" != "04034b50" ]]; then
-        LOGE "File not valid: ${INPUT_FILE//$WORK_DIR/}"
+        LOGE "파일이 유효하지 않습니다: ${INPUT_FILE//$WORK_DIR/}"
         exit 1
     fi
 
-    LOG "- Decoding ${INPUT_FILE//$WORK_DIR/}"
+    LOG "- ${INPUT_FILE//$WORK_DIR/} 디코딩 중..."
 
-    # Decode APK with --no-debug-info, which will disassemble DEX file with the following flags:
-    # - Disabled synthetic accessors comments
-    # - Disabled debug info
-    # - Use .locals directive instead of the .registers one
-    # - Use a sequential numbering scheme for labels
+    # --no-debug-info 옵션을 사용하여 APK를 디코딩하며, 다음 옵션으로 DEX 파일을 디스어셈블합니다:
+    # - synthetic accessor 주석 비활성화
+    # - 디버그 정보 비활성화
+    # - .registers 대신 .locals 지시문 사용
+    # - 레이블에 순차적인 번호 지정 방식 사용
     EVAL "apktool -JXmx${HEAP_SIZE}m d --no-debug-info -j \"$THREAD_COUNT\" -o \"$OUTPUT_PATH\" -p \"$FRAMEWORK_DIR\" -t \"$FRAMEWORK_TAG\" \"$INPUT_FILE\"" || exit 1
 }
 
@@ -119,11 +119,11 @@ PREPARE_SCRIPT()
         elif [[ "$1" == "--jobs" ]] || [[ "$1" == "-j" ]]; then
             shift; JOBS="$1"
             if ! [[ "$JOBS" =~ ^[1-9][0-9]*$ ]]; then
-                LOGE "Jobs number not valid: $JOBS"
+                LOGE "동시에 실행할 인스턴스 수가 유효하지 않습니다: $JOBS"
                 exit 1
             fi
         else
-            LOGE "Unknown option: $1"
+            LOGE "알 수 없는 옵션입니다: $1"
             exit 1
         fi
 
@@ -133,7 +133,7 @@ PREPARE_SCRIPT()
     MEM_TOTAL_MB="$(awk '/MemTotal/ { print int($2 / 1024) }' /proc/meminfo)"
 
     if [ "$JOBS" -gt "1" ]; then
-        # Split 3/4 of total system memory between the requested instances
+        # 요청된 인스턴스 간에 전체 시스템 메모리의 3/4을 분배
         HEAP_SIZE="$(bc -l <<< "scale=0; (($MEM_TOTAL_MB * 3) / 4) / $JOBS")"
         [ "$HEAP_SIZE" -lt "1024" ] && HEAP_SIZE="1024"
 
@@ -141,7 +141,7 @@ PREPARE_SCRIPT()
         [ "$MAX_THREADS" -lt "1" ] && MAX_THREADS="1"
         [ -n "$GITHUB_ACTIONS" ] && MAX_THREADS="1"
 
-        # Do not use more threads than half the heap in GB
+        # 힙 크기(GB)의 절반보다 많은 스레드를 사용하지 않음
         THREAD_COUNT="$(bc -l <<< "scale=0; $HEAP_SIZE / (1024 * 2)")"
         [ "$THREAD_COUNT" -gt "$MAX_THREADS" ] && THREAD_COUNT="$MAX_THREADS"
         [ "$THREAD_COUNT" -lt "1" ] && THREAD_COUNT="1"
@@ -152,7 +152,7 @@ PREPARE_SCRIPT()
         MAX_THREADS="$(nproc)"
         [ -n "$GITHUB_ACTIONS" ] && MAX_THREADS="1"
 
-        # Do not use more threads than half the total system memory in GB
+        # 전체 시스템 메모리(GB)의 절반보다 많은 스레드를 사용하지 않음
         THREAD_COUNT="$(bc -l <<< "scale=0; $MEM_TOTAL_MB / (1024 * 2)")"
         [ "$THREAD_COUNT" -gt "$MAX_THREADS" ] && THREAD_COUNT="$MAX_THREADS"
         [ "$THREAD_COUNT" -lt "1" ] && THREAD_COUNT="1"
@@ -163,7 +163,7 @@ PREPARE_SCRIPT()
         PRINT_USAGE
         exit 1
     elif ! IS_VALID_PARTITION_NAME "$PARTITION"; then
-        LOGE "\"$PARTITION\" is not a valid partition name"
+        LOGE "\"$PARTITION\"은(는) 유효한 파티션 이름이 아닙니다"
         exit 1
     fi
 
@@ -200,9 +200,9 @@ PREPARE_SCRIPT()
 
 PRINT_USAGE()
 {
-    echo "Usage: apktool d[ecode]/b[uild] [options] <partition> <file>" >&2
-    echo " -f, --force : Force delete output directory" >&2
-    echo " -j, --jobs : Specify the number of concurrent instances" >&2
+    echo "사용 예제: apktool d[ecode]/b[uild] [옵션] <파티션> <파일>" >&2
+    echo " -f, --force : 출력 디렉토리를 강제로 삭제" >&2
+    echo " -j, --jobs : 동시에 실행할 인스턴스 수 지정" >&2
 }
 # ]
 
@@ -211,7 +211,7 @@ ACTION=""
 PREPARE_SCRIPT "$@"
 
 if [ ! "$FRAMEWORK_TAG" ]; then
-    LOGE "Work dir needs to be set up before using this script"
+    LOGE "이 스크립트를 사용하기 전에 작업 디렉토리가 구성되어야 합니다."
     exit 1
 elif [ ! -f "$FRAMEWORK_DIR/1-$FRAMEWORK_TAG.apk" ]; then
     LOGW "framework-res.apk for \"$FRAMEWORK_TAG\" not found, installing"

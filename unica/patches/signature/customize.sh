@@ -2,7 +2,7 @@ CERT_PREFIX="aosp"
 $ROM_IS_OFFICIAL && CERT_PREFIX="unica"
 
 if [ ! -f "$SRC_DIR/security/${CERT_PREFIX}_platform.x509.pem" ]; then
-    ABORT "File not found: security/${CERT_PREFIX}_platform.x509.pem"
+    ABORT "파일이 존재하지 않습니다: security/${CERT_PREFIX}_platform.x509.pem"
 fi
 
 APPLY_PATCH "system" "system/framework/services.jar" "$MODPATH/services.jar/0001-Allow-custom-platform-signature.patch"

@@ -46,11 +46,11 @@ UPDATE_BLOBS()
         FILE_PATH="$PREBUILTS_DIR/${i//system\/system\//system/}"
 
         if [ ! -f "$FW_DIR/${MODEL}_${CSC}/$i" ]; then
-            LOGE "File not found: ${FW_DIR//$SRC_DIR\//}/${MODEL}_${CSC}/$i"
+            LOGE "파일이 존재하지 않습니다: ${FW_DIR//$SRC_DIR\//}/${MODEL}_${CSC}/$i"
             exit 1
         fi
 
-        LOG "- Updating prebuilts/samsung/$DEVICE/$i"
+        LOG "- prebuilts/samsung/$DEVICE/$i 업데이트 중..."
 
         if [ ! -L "$FW_DIR/${MODEL}_${CSC}/$i" ] && \
                 [ "$(wc -c "$FW_DIR/${MODEL}_${CSC}/$i" | cut -d " " -f 1)" -gt "52428800" ]; then
@@ -66,14 +66,14 @@ UPDATE_BLOBS()
 # ]
 
 if [[ "$#" != "2" ]]; then
-    echo "Usage: update_prebuilt_blobs <device> <firmware>" >&2
+    echo "사용 예제: update_prebuilt_blobs <디바이스> <펌웨어>" >&2
     exit 1
 fi
 
 DEVICE="$1"
 shift
 if [ ! -d "$SRC_DIR/prebuilts/samsung/$DEVICE" ]; then
-    LOGE "Folder not found: prebuilts/samsung/$DEVICE"
+    LOGE "폴더가 존재하지 않습니다: prebuilts/samsung/$DEVICE"
     exit 1
 fi
 
@@ -81,31 +81,31 @@ PARSE_FIRMWARE_STRING "$1" || exit 1
 
 LATEST_FIRMWARE="$(GET_LATEST_FIRMWARE "$MODEL" "$CSC")"
 if [ ! "$LATEST_FIRMWARE" ]; then
-    LOGE "Latest available firmware could not be fetched"
+    LOGE "최신 펌웨어 정보를 가져오지 못했습니다."
     exit 1
 fi
 
-LOG_STEP_IN true "Starting update_prebuilt_blobs for prebuilts/samsung/$DEVICE"
-LOG "- Current firmware: $(cat "$SRC_DIR/prebuilts/samsung/$DEVICE/.current" 2> /dev/null)"
-LOG "- Latest available firmware: $LATEST_FIRMWARE"
+LOG_STEP_IN true "update_prebuilt_blobs 시작: prebuilts/samsung/$DEVICE"
+LOG "- 현재 펌웨어: $(cat "$SRC_DIR/prebuilts/samsung/$DEVICE/.current" 2> /dev/null)"
+LOG "- 사용 가능한 최신 펌웨어: $LATEST_FIRMWARE"
 
 if [[ "$LATEST_FIRMWARE" == "$(cat "$SRC_DIR/prebuilts/samsung/$DEVICE/.current" 2> /dev/null)" ]]; then
     LOG_STEP_IN
-    LOG "\033[0;33m! Nothing to do\033[0m"
+    LOG "\033[0;33m! 아무 작업도 하지 않음\033[0m"
     exit 0
 fi
 
 LOG_STEP_OUT
 
-LOG_STEP_IN true "Downloading firmware"
+LOG_STEP_IN true "펌웨어 다운로드 중..."
 "$SRC_DIR/scripts/download_fw.sh" --ignore-source --ignore-target "$MODEL/$CSC/${IMEI:=$SERIAL_NO}" || exit 1
 LOG_STEP_OUT
 
-LOG_STEP_IN true "Extracting firmware"
+LOG_STEP_IN true "펌웨어 압축 해제 중..."
 "$SRC_DIR/scripts/extract_fw.sh" --ignore-source --ignore-target "$MODEL/$CSC/${IMEI:=$SERIAL_NO}" || exit 1
 LOG_STEP_OUT
 
-LOG_STEP_IN true "Updating blobs"
+LOG_STEP_IN true "블롭 업데이트 중..."
 UPDATE_BLOBS || exit 1
 
 exit 0

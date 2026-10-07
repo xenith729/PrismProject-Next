@@ -56,21 +56,21 @@ MANIFEST_FILE="$SRC_DIR/manifest.json"
 # ]
 
 if [ "$#" != 1 ]; then
-    echo "Usage: generate_ota_manifest <path to zips>" >&2
+    echo "사용 예제: generate_ota_manifest <zip 파일 경로>" >&2
     exit 1
 fi
 
 if [ ! -d "$1" ]; then
-    LOGE "Folder not found: $1"
+    LOGE "폴더가 존재하지 않습니다: $1"
     exit 1
 fi
 
 if ! find "$1" -maxdepth 1 -type f | grep -q ".zip"; then
-    LOGE "No update files found in $1"
+    LOGE "$1 에서 업데이트 파일을 찾을 수 없습니다."
     exit 1
 fi
 
-LOG_STEP_IN "- Generating OTA manifest"
+LOG_STEP_IN "- OTA 매니페스트 생성 중..."
 
 [ -f "$MANIFEST_FILE" ] && rm -f "$MANIFEST_FILE"
 touch "$MANIFEST_FILE"
@@ -91,6 +91,6 @@ sed -i '
 };  $!x;$s//\1/;s/^\n//' "$MANIFEST_FILE"
 
 LOG_STEP_OUT
-LOG "\nManifest saved in $MANIFEST_FILE"
+LOG "\n$MANIFEST_FILE 에 OTA 매니페스트가 저장되었습니다."
 
 exit 0
