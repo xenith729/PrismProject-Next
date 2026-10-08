@@ -1,4 +1,4 @@
 id=rro
-name=/product RRO configs
+name=/product RRO 구성
 author=salvogiangri
-description=Replaces /product RRO configs with target ones.
+description=/product RRO 구성을 타겟 디바이스의 것으로 교체합니다.

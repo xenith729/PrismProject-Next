@@ -1,4 +1,4 @@
 id=bluetooth
-name=Bluetooth patches
+name=블루투스 패치
 author=salvogiangri, duhansysl
-description=Applies Bluetooth patches in work dir.
+description=작업 디렉토리에 블루투스 패치를 적용합니다.

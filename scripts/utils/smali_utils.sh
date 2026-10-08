@@ -41,7 +41,7 @@ SMALI_PATCH()
     if [[ "$OPERATION" != "null" ]] && [[ "$OPERATION" != "remove" ]] && \
         [[ "$OPERATION" != "replace" ]] && [[ "$OPERATION" != "replaceall" ]] && \
             [[ "$OPERATION" != "return" ]] && [[ "$OPERATION" != "strip" ]]; then
-        LOGE "Operation 가 유효하지 않습니다: \"$OPERATION\""
+        LOGE "작업이 유효하지 않습니다: \"$OPERATION\""
         return 1
     fi
 
@@ -54,7 +54,7 @@ SMALI_PATCH()
         local METHOD="$5"
 
         if ! [[ "$METHOD" =~ ^[A-Za-z0-9\$\<\-].*\(.*\).* ]]; then
-            LOGE "Method name 가 유효하지 않습니다: \"$METHOD\""
+            LOGE "메서드 이름이 유효하지 않습니다: \"$METHOD\""
             return 1
         fi
     fi

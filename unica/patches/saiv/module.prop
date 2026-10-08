@@ -1,4 +1,4 @@
 id=saiv
-name=SAIV patches
+name=SAIV 패치
 author=Fede2782, salvogiangri
-description=Replaces, updates and integrates SAIV blobs in work dir.
+description=작업 디렉토리의 SAIV 블롭을 교체하고 업데이트합니다.

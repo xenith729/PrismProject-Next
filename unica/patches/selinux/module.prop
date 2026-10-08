@@ -1,4 +1,4 @@
 id=selinux
-name=SELinux fix
+name=SELinux 수정
 author=ShaDisNX255, Fede2782
-description=Removes unsupported sepolicy entries.
+description=지원되지 않는 sepolicy 정책을 제거합니다.

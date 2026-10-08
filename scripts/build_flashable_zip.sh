@@ -79,9 +79,9 @@ PREPARE_SCRIPT()
 
 PRINT_USAGE()
 {
-    echo "사용 예제: build_flashable_zip [options] <file>" >&2
-    echo " -i, --incremental : 주어진 target-files zip을 소스로 사용하여 incremental zip을 생성합니다." >&2
-    echo " -o, --output : 출력 zip 경로를 설정합니다, 기본값은 $OUT_DIR 입니다." >&2
+    echo "사용 예제: build_flashable_zip [옵션] <파일>" >&2
+    echo " -i, --incremental : 주어진 target-files zip을 소스로 사용하여 증분 zip을 생성합니다." >&2
+    echo " -o, --output : 출력 zip 경로를 설정합니다. (기본값: $OUT_DIR)" >&2
 }
 # ]
 

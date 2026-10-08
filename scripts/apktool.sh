@@ -25,7 +25,7 @@ BUILD()
         exit 1
     fi
 
-    LOG "- Building ${INPUT_FILE//$WORK_DIR/}"
+    LOG "- ${INPUT_FILE//$WORK_DIR/} 빌드 중..."
 
     # 원본 META-INF 복사
     mkdir -p "$OUTPUT_PATH/build/apk"
@@ -214,7 +214,7 @@ if [ ! "$FRAMEWORK_TAG" ]; then
     LOGE "이 스크립트를 사용하기 전에 작업 디렉토리가 구성되어야 합니다."
     exit 1
 elif [ ! -f "$FRAMEWORK_DIR/1-$FRAMEWORK_TAG.apk" ]; then
-    LOGW "framework-res.apk for \"$FRAMEWORK_TAG\" not found, installing"
+    LOGW "\"$FRAMEWORK_TAG\"의 framework-res.apk를 찾을 수 없습니다. 설치를 진행합니다"
     EVAL "apktool if -p \"$FRAMEWORK_DIR\" -t \"$FRAMEWORK_TAG\" \"$WORK_DIR/system/system/framework/framework-res.apk\"" || exit 1
 fi
 

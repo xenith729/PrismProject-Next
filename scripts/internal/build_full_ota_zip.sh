@@ -57,7 +57,7 @@ GENERATE_OP_LIST()
     } > "$OP_LIST_FILE"
 
     if [ "$OCCUPIED_SPACE" -gt "$SUPER_GROUP_SIZE" ]; then
-        LOGE "OS size ($OCCUPIED_SPACE) is bigger than the target group size ($SUPER_GROUP_SIZE)"
+        LOGE "OS 크기($OCCUPIED_SPACE)가 타겟 그룹 크기($SUPER_GROUP_SIZE)보다 큽니다."
         exit 1
     fi
 }

@@ -1,4 +1,4 @@
 id=dvfs
-name=DVFS patches
+name=DVFS 패치
 author=salvogiangri, ata-kaner
-description=Replaces DVFS policy with target one.
+description=DVFS 정책을 타겟 디바이스의 것으로 교체합니다.

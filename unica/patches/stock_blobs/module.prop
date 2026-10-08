@@ -1,4 +1,4 @@
 id=stock_blobs
-name=Stock blobs
+name=순정 블롭
 author=salvogiangri
-description=Replaces generic source blobs with target ones.
+description=일반적인 소스 블롭을 타겟 디바이스의 것으로 교체합니다.

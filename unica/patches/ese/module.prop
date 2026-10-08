@@ -1,4 +1,4 @@
 id=ese
-name=eSE patches
+name=eSE 패치
 author=salvogiangri
-description=Applies eSE patches in work dir.
+description=작업 디렉토리에 eSE 패치를 적용합니다.

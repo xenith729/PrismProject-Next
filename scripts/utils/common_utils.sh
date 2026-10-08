@@ -18,7 +18,7 @@ _CHECK_NON_EMPTY_PARAM()
             echo -n "${FUNCNAME[1]}) " >&2
         fi
 
-        echo -n "$1 가 설정되지 않았습니다!" >&2
+        echo -n "$1이(가) 설정되지 않았습니다!" >&2
         echo -e '\033[0m' >&2
 
         return 1

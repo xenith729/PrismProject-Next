@@ -80,7 +80,7 @@ VERIFY_ODIN_PACKAGES()
 
     while IFS= read -r f; do
         FILE_NAME="$(basename "$f")"
-        LOG_STEP_IN "- Verifying $FILE_NAME..."
+        LOG_STEP_IN "- $FILE_NAME 검증 중..."
 
         FILE_NAME="${FILE_NAME%.md5}"
 

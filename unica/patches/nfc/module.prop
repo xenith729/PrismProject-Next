@@ -1,4 +1,4 @@
 id=nfc
-name=NFC patches
+name=NFC 패치
 author=salvogiangri
-description=Applies NFC patches in work dir.
+description=작업 디렉토리에 NFC 패치를 적용합니다.

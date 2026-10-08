@@ -1,4 +1,4 @@
 id=spen
-name=S Pen blobs
+name=S펜 플롭
 author=salvogiangri
-description=Adds S Pen blobs if target device is capable.
+description=타겟 디바이스가 지원하는 경우 S펜 블롭을 추가합니다.

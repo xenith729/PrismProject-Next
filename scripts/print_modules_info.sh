@@ -37,7 +37,7 @@ PRINT_MODULE_INFO()
     LOG "-- 모듈 $MODULES_COUNT:"
     LOG "이름: $MODNAME"
     LOG "제작자: $MODAUTH"
-    [ "$MODDESC" ] && LOG "Description: $MODDESC"
+    [ "$MODDESC" ] && LOG "설명: $MODDESC"
 }
 #]
 

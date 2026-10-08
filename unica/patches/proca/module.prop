@@ -1,4 +1,4 @@
 id=proca
-name=PROCA kernel patch
+name=PROCA 커널 패치
 author=salvogiangri
-description=Removes PROCA from stock kernel image.
+description=순정 커널 이미지에서 PROCA를 제거합니다.

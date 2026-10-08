@@ -1,4 +1,4 @@
 id=product_feature
-name=SEC Product Feature patches
+name=SEC Product Feature 패치
 author=salvogiangri
-description=Compares both source/target SPF flags and apply patches if required.
+description=소스와 타겟의 SPF 플래그를 비교하고 필요한 경우 패치를 적용합니다.

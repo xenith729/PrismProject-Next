@@ -27,7 +27,7 @@ _GET_CALLER_INFO()
 # ]
 
 # LOG <message>
-# 빌드 출력에 로그 메세지를 출력합니다.
+# 빌드 출력에 로그 메시지를 출력합니다.
 LOG()
 {
     local INDENT="${INDENT_LEVEL:=0}"
@@ -36,7 +36,7 @@ LOG()
 }
 
 # LOGE <message>
-# 빌드 출력에 오류 로그 메세지를 출력합니다.
+# 빌드 출력에 오류 로그 메시지를 출력합니다.
 LOGE()
 {
     local RED="\033[0;31m"
@@ -46,7 +46,7 @@ LOGE()
 }
 
 # LOGW <message>
-# 빌드 출력에 경고 로그 메세지를 출력합니다.
+# 빌드 출력에 경고 로그 메시지를 출력합니다.
 LOGW()
 {
     local YELLOW="\033[0;33m"
@@ -56,7 +56,7 @@ LOGW()
 }
 
 # LOG_STEP_IN <bold> <message>
-# 출력을 들여쓰기를 증가시키며, 제공된 경우 로그 메시지도 함께 출력합니다.
+# 출력 들여쓰기를 증가시키며, 제공된 경우 로그 메시지도 함께 출력합니다.
 LOG_STEP_IN()
 {
     local BOLD

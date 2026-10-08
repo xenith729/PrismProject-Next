@@ -115,7 +115,7 @@ READ_AND_APPLY_PROPS()
                     SET_PROP "$PARTITION" "$(cut -d "=" -f 1 -s <<< "$l")" "$(cut -d "=" -f 2- -s <<< "$l")"
                 fi
             else
-                LOGE "Malformed string in $f: \"$l\""
+                LOGE "$f의 문자열 형식이 잘못되었습니다: \"$l\""
                 return 1
             fi
         done < "$f"

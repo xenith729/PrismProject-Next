@@ -1,4 +1,4 @@
 id=camera
-name=Camera patches
+name=카메라 패치
 author=salvogiangri
-description=Applies camera-specific patches in work dir.
+description=작업 디렉토리에 카메라 패치를 적용합니다.

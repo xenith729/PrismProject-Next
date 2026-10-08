@@ -91,7 +91,7 @@ PRINT_BUILD_OUTCOME()
 
 PRINT_USAGE()
 {
-    echo "사용 예제: make_rom [options]" >&2
+    echo "사용 예제: make_rom [옵션]" >&2
     echo " -f, --force : ROM 강제 빌드" >&2
     echo " -x, --no-target-files : target-files zip을 빌드하지 않음" >&2
     echo " -z, --build-rom-zip : 플래시 가능한 zip 빌드" >&2

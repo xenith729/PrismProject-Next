@@ -1,4 +1,4 @@
 id=fs
-name=Filesystem support
+name=커스텀 파일 시스템 지원
 author=salvogiangri, utkustnr, nhglong
-description=Adds custom filesystems support.
+description=커스텀 파일 시스템 지원을 추가합니다.
