@@ -1,4 +1,4 @@
 id=prophide
-name=Hide sensitive props
+name=민감한 프롭 숨기기
 author=salvogiangri
-description=Hides sensitive props at boot time.
+description=부팅 중 민감한 프롭을 숨깁니다.

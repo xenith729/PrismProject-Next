@@ -1,4 +1,4 @@
 id=pinconfirm
-name=4 digits auto confirm PIN
+name=4자리 PIN 자동 잠금 해제
 author=salvogiangri
-description=Sets auto confirm PIN minimum required digits to 4.
+description=PIN 최소 자동 잠금 해제 자릿수를 4자리로 변경합니다.

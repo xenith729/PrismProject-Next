@@ -6,7 +6,7 @@ LOG_MISSING_PATCHES()
     if $DEBUG; then
         LOGW "$MESSAGE"
     else
-        ABORT "${MESSAGE}. Aborting"
+        ABORT "${MESSAGE}. 중단합니다."
     fi
 }
 # ]

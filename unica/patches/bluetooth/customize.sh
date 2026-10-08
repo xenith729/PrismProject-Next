@@ -2,7 +2,7 @@ SOURCE_FIRMWARE_PATH="$(cut -d "/" -f 1 -s <<< "$SOURCE_FIRMWARE")_$(cut -d "/" 
 
 if [[ "$(sha1sum "$WORK_DIR/system/system/apex/com.android.bt.apex" | cut -d " " -f 1)" != \
         "$(sha1sum "$FW_DIR/$SOURCE_FIRMWARE_PATH/system/system/apex/com.android.bt.apex" | cut -d " " -f 1)" ]]; then
-    LOG "\033[0;33m! Nothing to do\033[0m"
+    LOG "\033[0;33m! 변경 사항 없음\033[0m"
     unset SOURCE_FIRMWARE_PATH
     return 0
 fi
@@ -20,12 +20,12 @@ BUILD_APK_IN_APEX()
     fi
 
     if [ -d "$APKTOOL_DIR/${OUTPUT_FILE//$WORK_DIR\/system\//}" ]; then
-        LOG "- Building ${INPUT_FILE//$TMP_DIR\/unknown\//}"
+        LOG "- ${INPUT_FILE//$TMP_DIR\/unknown\//} 빌드 중..."
         "$SRC_DIR/scripts/apktool.sh" b "system" "${OUTPUT_FILE//$WORK_DIR\/system\//}" > /dev/null
         if [[ "$OUTPUT_FILE" == *".jar" ]]; then
-            LOG "- Zipaligning ${INPUT_FILE//$TMP_DIR\/unknown\//}"
+            LOG "- ${INPUT_FILE//$TMP_DIR\/unknown\//} Zipalign 중..."
         else
-            LOG "- Signing ${INPUT_FILE//$TMP_DIR\/unknown\//}"
+            LOG "- ${INPUT_FILE//$TMP_DIR\/unknown\//} 서명 중..."
         fi
 
         mv -f "$OUTPUT_FILE" "$INPUT_FILE"
@@ -40,7 +40,7 @@ BUILD_APK_IN_APEX()
 
 BUILD_APEX()
 {
-    LOG "- Building ${1//$WORK_DIR/}"
+    LOG "- ${1//$WORK_DIR/} 빌드 중..."
 
     mkdir -p "$TMP_DIR/build/apk"
     cp -a "$TMP_DIR/original/META-INF" "$TMP_DIR/build/apk/META-INF"
@@ -52,7 +52,7 @@ BUILD_APEX()
 
 BUILD_PAYLOAD()
 {
-    LOG "- Building apex_payload.img"
+    LOG "- apex_payload.img 빌드 중..."
 
     "$SRC_DIR/scripts/build_fs_image.sh" "ext4" --no-avb \
         -o "$TMP_DIR/unknown/apex_payload.img" -p "system" \
@@ -63,7 +63,7 @@ BUILD_PAYLOAD()
 
 DECODE_APEX()
 {
-    LOG "- Decoding ${1//$WORK_DIR/}"
+    LOG "- ${1//$WORK_DIR/} 디코딩 중..."
     EVAL "apktool d -j \"$(nproc)\" -o \"$TMP_DIR\" -r \"$1\""
 }
 
@@ -81,19 +81,19 @@ DECODE_APK_IN_APEX()
 
     if [ ! -f "$OUTPUT_FILE" ]; then
         mv -f "$INPUT_FILE" "$OUTPUT_FILE"
-        LOG "- Decoding ${INPUT_FILE//$TMP_DIR\/unknown\//}"
+        LOG "- ${INPUT_FILE//$TMP_DIR\/unknown\//} 디코딩 중..."
         DECODE_APK "system" "${OUTPUT_FILE//$WORK_DIR\/system\//}" > /dev/null
     fi
 }
 
 EXTRACT_PAYLOAD()
 {
-    LOG_STEP_IN "- Unpacking apex_payload.img"
+    LOG_STEP_IN "- apex_payload.img 압축 해제 중..."
 
     if ! sudo -n -v &> /dev/null; then
-        LOG "\033[0;33m! Asking user for sudo password\033[0m"
+        LOG "\033[0;33m! 사용자에게 sudo 비밀번호를 요청합니다\033[0m"
         if ! sudo -v 2> /dev/null; then
-            ABORT "Root permissions are required to unpack APEX image"
+            ABORT "APEX 이미지를 압축 해제하려면 루트 권한이 필요합니다."
         fi
     fi
 
@@ -108,7 +108,7 @@ EXTRACT_PAYLOAD()
         rm -rf "$TMP_DIR/unknown/apex_payload/lost+found"
     fi
 
-    LOG "- Generating fs_config/file_context for apex_payload.img"
+    LOG "- apex_payload.img의 fs_config/file_context 생성 중..."
 
     EVAL "sudo find \"$TMP_DIR/tmp_out\" | sudo xargs -I \"{}\" -P \"$(nproc)\" stat -c \"%n %u %g %a capabilities=0x0\" \"{}\" > \"$TMP_DIR/unknown/fs_config-apex_payload\""
     EVAL "sudo find \"$TMP_DIR/tmp_out\" | sudo xargs -I \"{}\" -P \"$(nproc)\" sh -c 'echo \"\$1 \$(getfattr -n security.selinux --only-values -h --absolute-names \"\$1\")\"' \"sh\" \"{}\" > \"$TMP_DIR/unknown/file_context-apex_payload\""
@@ -125,18 +125,18 @@ EXTRACT_PAYLOAD()
 
 LOG_MISSING_PATCHES()
 {
-    local MESSAGE="Missing SPF patches for condition ($1: [${!1}], $2: [${!2}])"
+    local MESSAGE="조건에 맞는 SPF 패치가 누락되었습니다 ($1: [${!1}], $2: [${!2}])"
 
     if $DEBUG; then
         LOGW "$MESSAGE"
     else
-        ABORT "${MESSAGE}. Aborting"
+        ABORT "${MESSAGE}. 중단합니다."
     fi
 }
 
 SIGN_APEX()
 {
-    LOG "- Signing ${1//$WORK_DIR/}"
+    LOG "- ${1//$WORK_DIR/} 서명 중..."
 
     local CERT_PREFIX="aosp"
     if $ROM_IS_OFFICIAL; then
@@ -150,7 +150,7 @@ SIGN_APEX()
 
 SIGN_PAYLOAD()
 {
-    LOG "- Signing apex_payload.img with AVB"
+    LOG "- AVB로 apex_payload.img 서명 중..."
 
     local SALT
     # https://android.googlesource.com/platform/system/apex/+/refs/tags/android-16.0.0_r4/apexer/apexer.py#689
@@ -174,19 +174,19 @@ EXTRACT_PAYLOAD
 if $SOURCE_BLUETOOTH_SUPPORT_A2DPSINK_PROFILE; then
     if ! $TARGET_BLUETOOTH_SUPPORT_A2DPSINK_PROFILE; then
         DECODE_APK_IN_APEX "$TMP_DIR/unknown/apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk"
-        LOG "- Applying \"Disable SUPPORT_A2DPSINK_PROFILE support\" to apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk"
+        LOG "- apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk에 \"SUPPORT_A2DPSINK_PROFILE 지원 비활성화\" 패치 적용 중"
         APPLY_PATCH "system" "system/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk" \
             "$MODPATH/a2dp_sink/Bluetooth.apk/0001-Disable-SUPPORT_A2DPSINK_PROFILE-support.patch" \
             > /dev/null
         DECODE_APK_IN_APEX "$TMP_DIR/unknown/apex_payload/javalib/framework-bluetooth.jar"
-        LOG "- Applying \"Disable SUPPORT_A2DPSINK_PROFILE support\" to apex_payload/javalib/framework-bluetooth.jar"
+        LOG "- apex_payload/javalib/framework-bluetooth.jar에 \"SUPPORT_A2DPSINK_PROFILE 지원 비활성화\" 패치 적용 중"
         APPLY_PATCH "system" "system/framework/framework-bluetooth.jar" \
             "$MODPATH/a2dp_sink/framework-bluetooth.jar/0001-Disable-SUPPORT_A2DPSINK_PROFILE-support.patch" \
             > /dev/null
     fi
 else
     if $TARGET_BLUETOOTH_SUPPORT_A2DPSINK_PROFILE; then
-        # TODO handle this condition
+        # TODO: 이 조건 처리 필요
         LOG_MISSING_PATCHES "SOURCE_BLUETOOTH_SUPPORT_A2DPSINK_PROFILE" "TARGET_BLUETOOTH_SUPPORT_A2DPSINK_PROFILE"
     fi
 fi
@@ -195,14 +195,14 @@ fi
 if ! $SOURCE_BLUETOOTH_SUPPORT_A2DP_SBM; then
     if $TARGET_BLUETOOTH_SUPPORT_A2DP_SBM; then
         DECODE_APK_IN_APEX "$TMP_DIR/unknown/apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk"
-        LOG "- Applying \"Enable SUPPORT_A2DP_SBM support\" to apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk"
+        LOG "- apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk에 \"SUPPORT_A2DP_SBM 지원 활성화\" 패치 적용 중"
         APPLY_PATCH "system" "system/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk" \
             "$MODPATH/sbm/Bluetooth.apk/0001-Enable-SUPPORT_A2DP_SBM-support.patch" \
             > /dev/null
     fi
 else
     if ! $TARGET_BLUETOOTH_SUPPORT_A2DP_SBM; then
-        # TODO handle this condition
+        # TODO: 이 조건 처리 필요
         LOG_MISSING_PATCHES "SOURCE_BLUETOOTH_SUPPORT_A2DP_SBM" "TARGET_BLUETOOTH_SUPPORT_A2DP_SBM"
     fi
 fi
@@ -211,14 +211,14 @@ fi
 if ! $SOURCE_BLUETOOTH_SUPPORT_HEAD_SAR_BACKOFF; then
     if $TARGET_BLUETOOTH_SUPPORT_HEAD_SAR_BACKOFF; then
         DECODE_APK_IN_APEX "$TMP_DIR/unknown/apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk"
-        LOG "- Applying \"Enable SUPPORT_HEAD_SAR_BACKOFF support\" to apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk"
+        LOG "- apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk에 \"SUPPORT_HEAD_SAR_BACKOFF 지원 활성화\" 패치 적용 중"
         APPLY_PATCH "system" "system/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk" \
             "$MODPATH/head_sar/Bluetooth.apk/0001-Enable-SUPPORT_HEAD_SAR_BACKOFF-support.patch" \
             > /dev/null
     fi
 else
     if ! $TARGET_BLUETOOTH_SUPPORT_HEAD_SAR_BACKOFF; then
-        # TODO handle this condition
+        # TODO: 이 조건 처리 필요
         LOG_MISSING_PATCHES "SOURCE_BLUETOOTH_SUPPORT_HEAD_SAR_BACKOFF" "TARGET_BLUETOOTH_SUPPORT_HEAD_SAR_BACKOFF"
     fi
 fi
@@ -227,7 +227,7 @@ fi
 if $SOURCE_BLUETOOTH_SUPPORT_XLNA_CONTROL; then
     if ! $TARGET_BLUETOOTH_SUPPORT_XLNA_CONTROL; then
         DECODE_APK_IN_APEX "$TMP_DIR/unknown/apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk"
-        LOG "- Applying \"Disable SUPPORT_XLNA_CONTROL support\" to apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk"
+        LOG "- apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk에 \"SUPPORT_XLNA_CONTROL 지원 비활성화\" 패치 적용 중"
         APPLY_PATCH "system" "system/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk" \
             "$MODPATH/xlna/Bluetooth.apk/0001-Disable-SUPPORT_XLNA_CONTROL-support.patch" \
             > /dev/null
@@ -235,17 +235,17 @@ if $SOURCE_BLUETOOTH_SUPPORT_XLNA_CONTROL; then
 else
     if $TARGET_BLUETOOTH_SUPPORT_XLNA_CONTROL; then
         DECODE_APK_IN_APEX "$TMP_DIR/unknown/apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk"
-        LOG "- Applying \"Enable SUPPORT_XLNA_CONTROL support\" to apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk"
+        LOG "- apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk에 \"SUPPORT_XLNA_CONTROL 지원 활성화\" 패치 적용 중"
         APPLY_PATCH "system" "system/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk" \
             "$MODPATH/xlna/Bluetooth.apk/0001-Enable-SUPPORT_XLNA_CONTROL-support.patch" \
             > /dev/null
     fi
 fi
 
-# Disable VaultKeeper support
-# Before: [tbnz w8, #0, #0xXXXXXX]
-# After: [b #0xXXXXXX]
-LOG "- Patching \"28f7773948050037\" to \"28f777392a000014\" in apex_payload/lib64/libbluetooth_jni.so"
+# VaultKeeper 지원 비활성화
+# 변경 전: [tbnz w8, #0, #0xXXXXXX]
+# 변경 후: [b #0xXXXXXX]
+LOG "- apex_payload/lib64/libbluetooth_jni.so에서 \"28f7773948050037\"을(를) \"28f777392a000014\"(으)로 패치 중"
 HEX_PATCH "$TMP_DIR/unknown/apex_payload/lib64/libbluetooth_jni.so" \
     "28f7773948050037" "28f777392a000014" > /dev/null
 

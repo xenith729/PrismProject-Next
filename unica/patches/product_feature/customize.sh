@@ -8,7 +8,7 @@ GET_FINGERPRINT_SENSOR_TYPE()
     elif [[ "$1" == *"side"* ]]; then
         echo "side"
     else
-        ABORT "Unknown fingerprint sensor type: \"$1\". Aborting"
+        ABORT "Unknown fingerprint sensor type: \"$1\". 중단합니다."
     fi
 }
 
@@ -19,7 +19,7 @@ LOG_MISSING_PATCHES()
     if $DEBUG; then
         LOGW "$MESSAGE"
     else
-        ABORT "${MESSAGE}. Aborting"
+        ABORT "${MESSAGE}. 중단합니다."
     fi
 }
 # ]

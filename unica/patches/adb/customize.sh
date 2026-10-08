@@ -1,10 +1,10 @@
-# Only enable on debug builds
+# 디버그 빌드에서만 활성화
 if ! $DEBUG; then
-    LOG "\033[0;33m! Non-debug build detected. Skipping\033[0m"
+    LOG "\033[0;33m! 디버그 빌드가 아닙니다. 건너뜁니다\033[0m"
     return 0
 fi
 
-# Start adbd on boot
+# 부팅 시 adbd 시작
 # https://android.googlesource.com/platform/packages/modules/adb/+/refs/heads/main/docs/dev/how_adbd_starts.md
 SET_PROP_IF_DIFF "product" "persist.sys.usb.config" "$(GET_PROP "product" "persist.sys.usb.config"),adb"
 SET_PROP_IF_DIFF "odm" "persist.sys.usb.config" "$(GET_PROP "odm" "persist.sys.usb.config"),adb"
@@ -13,16 +13,16 @@ SET_PROP_IF_DIFF "system_dlkm" "persist.sys.usb.config" "$(GET_PROP "system_dlkm
 SET_PROP_IF_DIFF "vendor" "persist.sys.usb.config" "$(GET_PROP "vendor" "persist.sys.usb.config"),adb"
 SET_PROP_IF_DIFF "vendor_dlkm" "persist.sys.usb.config" "$(GET_PROP "vendor_dlkm" "persist.sys.usb.config"),adb"
 
-# Disable adb authentication
+# adb 인증 비활성화
 # https://android.googlesource.com/platform/packages/modules/adb/+/refs/tags/android-15.0.0_r1/daemon/main.cpp#213
 SET_PROP_IF_DIFF "system" "ro.adb.secure" "0"
 SET_PROP_IF_DIFF "vendor" "ro.adb.secure" "0"
 
-# Enable klogd daemon
+# klogd 데몬 활성화
 # https://android.googlesource.com/platform/system/logging/+/refs/tags/android-16.0.0_r2/logd/main.cpp#214
 SET_PROP "system" "ro.logd.kernel" "true"
 
-# Do not filter out Samsung processes in logs
+# 로그에서 삼성 프로세스를 필터링하지 않음
 SET_PROP_IF_DIFF "system" "persist.log.semlevel" "0xFFFFFFFF"
 
 if [ -f "$WORK_DIR/system/system/etc/init/hw/init.usb.rc" ]; then

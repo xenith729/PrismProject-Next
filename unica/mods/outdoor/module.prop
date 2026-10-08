@@ -1,4 +1,4 @@
 id=outdoor
-name=Outdoor mode
+name=야외 모드
 author=salvogiangri
-description=Adds Outdoor mode support in Settings app.
+description=설정 앱에서 야외 모드 토글을 활성화합니다.

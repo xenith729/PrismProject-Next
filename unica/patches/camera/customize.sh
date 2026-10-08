@@ -3,12 +3,12 @@ _LOG() { if $DEBUG; then LOGW "$1"; else ABORT "$1"; fi }
 
 LOG_MISSING_PATCHES()
 {
-    local MESSAGE="Missing SPF patches for condition ($1: [${!1}], $2: [${!2}])"
+    local MESSAGE="조건에 맞는 SPF 패치가 누락되었습니다 ($1: [${!1}], $2: [${!2}])"
 
     if $DEBUG; then
         LOGW "$MESSAGE"
     else
-        ABORT "${MESSAGE}. Aborting"
+        ABORT "${MESSAGE}. 중단합니다."
     fi
 }
 # ]
@@ -19,21 +19,21 @@ TARGET_FIRMWARE_PATH="$(cut -d "/" -f 1 -s <<< "$TARGET_FIRMWARE")_$(cut -d "/" 
 DELETE_FROM_WORK_DIR "system" "system/cameradata/portrait_data"
 ADD_TO_WORK_DIR "$TARGET_FIRMWARE" "system" "system/cameradata/portrait_data" 0 0 755 "u:object_r:system_file:s0"
 if [ -f "$SRC_DIR/target/$TARGET_CODENAME/camera/singletake/service-feature.xml" ]; then
-    LOG "- Adding /system/system/cameradata/singletake/service-feature.xml"
+    LOG "- /system/system/cameradata/singletake/service-feature.xml 추가 중..."
     EVAL "cp -a \"$SRC_DIR/target/$TARGET_CODENAME/camera/singletake/service-feature.xml\" \"$WORK_DIR/system/system/cameradata/singletake/service-feature.xml\""
 else
     ADD_TO_WORK_DIR "$TARGET_FIRMWARE" \
         "system" "system/cameradata/singletake/service-feature.xml" 0 0 644 "u:object_r:system_file:s0"
 fi
 if [ -f "$SRC_DIR/target/$TARGET_CODENAME/camera/aremoji-feature.xml" ]; then
-    LOG "- Adding /system/system/cameradata/aremoji-feature.xml"
+    LOG "- /system/system/cameradata/aremoji-feature.xml 추가 중..."
     EVAL "cp -a \"$SRC_DIR/target/$TARGET_CODENAME/camera/aremoji-feature.xml\" \"$WORK_DIR/system/system/cameradata/aremoji-feature.xml\""
 else
     ADD_TO_WORK_DIR "$TARGET_FIRMWARE" \
         "system" "system/cameradata/aremoji-feature.xml" 0 0 644 "u:object_r:system_file:s0"
 fi
 if [ -f "$SRC_DIR/target/$TARGET_CODENAME/camera/camera-feature.xml" ]; then
-    LOG "- Adding /system/system/cameradata/camera-feature.xml"
+    LOG "- /system/system/cameradata/camera-feature.xml 추가 중..."
     EVAL "cp -a \"$SRC_DIR/target/$TARGET_CODENAME/camera/camera-feature.xml\" \"$WORK_DIR/system/system/cameradata/camera-feature.xml\""
 elif [[ "$SOURCE_PLATFORM_SDK_VERSION" == "$TARGET_PLATFORM_SDK_VERSION" ]]; then
     ADD_TO_WORK_DIR "$TARGET_FIRMWARE" \
@@ -44,18 +44,18 @@ fi
 
 LOG_STEP_IN
 if grep -q "DURING_SMARTVIEW" "$WORK_DIR/system/system/cameradata/camera-feature.xml" 2> /dev/null; then
-    LOG "- Removing Smart View limitations flags"
+    LOG "- Smart View 제한 플래그 제거 중..."
     EVAL "sed -i \"/DURING_SMARTVIEW/d\" \"$WORK_DIR/system/system/cameradata/camera-feature.xml\""
 fi
 if [ "$(GET_FLOATING_FEATURE_CONFIG "SEC_FLOATING_FEATURE_GRAPHICS_SUPPORT_3D_SURFACE_TRANSITION_FLAG")" ]; then
     if grep -q "SUPPORT_LIVE_BLUR" "$WORK_DIR/system/system/cameradata/camera-feature.xml" 2> /dev/null; then
-        LOG "- Removing native blur disable flag"
+        LOG "- 네이티브 블러 비활성화 플래그 제거 중..."
         EVAL "sed -i \"/SUPPORT_LIVE_BLUR/d\" \"$WORK_DIR/system/system/cameradata/camera-feature.xml\""
     fi
 fi
 LOG_STEP_OUT
 
-# Samsung Camera "hal3_mass-phone-release" app flavor
+# 삼성 카메라 "hal3_mass-phone-release" 앱 플레이버
 if ! $SOURCE_CAMERA_SUPPORT_MASS_APP_FLAVOR; then
     if $TARGET_CAMERA_SUPPORT_MASS_APP_FLAVOR; then
         ADD_TO_WORK_DIR "r9qxxx" "system" "system/priv-app/SamsungCamera/SamsungCamera.apk" 0 0 644 "u:object_r:system_file:s0"

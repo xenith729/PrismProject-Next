@@ -46,7 +46,7 @@ if ! $SOURCE_HAS_UWB; then
     fi
 else
     if ! $TARGET_HAS_UWB; then
-        ABORT "Missing patch for condition (SOURCE_HAS_UWB: [$SOURCE_HAS_UWB], TARGET_HAS_UWB: [$TARGET_HAS_UWB]). Aborting"
+        ABORT "Missing patch for condition (SOURCE_HAS_UWB: [$SOURCE_HAS_UWB], TARGET_HAS_UWB: [$TARGET_HAS_UWB]). 중단합니다."
     fi
 fi
 

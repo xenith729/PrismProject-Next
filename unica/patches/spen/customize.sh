@@ -31,7 +31,7 @@ if ! $SOURCE_HAS_SPEN; then
     fi
 else
     if ! $TARGET_HAS_SPEN; then
-        ABORT "Missing patch for condition (SOURCE_HAS_SPEN: [$SOURCE_HAS_SPEN], TARGET_HAS_SPEN: [$TARGET_HAS_SPEN]). Aborting"
+        ABORT "Missing patch for condition (SOURCE_HAS_SPEN: [$SOURCE_HAS_SPEN], TARGET_HAS_SPEN: [$TARGET_HAS_SPEN]). 중단합니다."
     fi
 fi
 
