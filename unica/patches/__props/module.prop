@@ -1,4 +1,4 @@
 id=props
-name=UN1CA build properties
-author=Fede2782
-description=Adds properties to identify this UN1CA build.
+name=PrismProject 빌드 프롭
+author=Fede2782, Xenith
+description=빌드 프롭에 PrismProject 속성을 추가합니다.

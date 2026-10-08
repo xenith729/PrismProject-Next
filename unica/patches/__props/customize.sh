@@ -1,16 +1,16 @@
-# Property identifying the ROM version
+# ROM 버전 속성 지정
 SET_PROP "system" "ro.prismproject.version" "$ROM_VERSION"
 EVAL "echo \"ro.prismproject.version u:object_r:build_prop:s0 exact string\" >> \"$WORK_DIR/system/system/etc/selinux/plat_property_contexts\""
 
-# Property identifying the ROM build time
+# ROM 빌드 타임스탬프 속성 지정
 SET_PROP "system" "ro.prismproject.timestamp" "$ROM_BUILD_TIMESTAMP"
 EVAL "echo \"ro.prismproject.timestamp u:object_r:build_prop:s0 exact string\" >> \"$WORK_DIR/system/system/etc/selinux/plat_property_contexts\""
 
-# Property identifying the device codename ROM is being built for
+# ROM 디바이스 코드네임 속성 지정
 SET_PROP "system" "ro.prismproject.device" "$TARGET_CODENAME"
 EVAL "echo \"ro.prismproject.device u:object_r:build_prop:s0 exact string\" >> \"$WORK_DIR/system/system/etc/selinux/plat_property_contexts\""
 
-# Property identifying the ROM build as a whole
+# ROM 빌드 전체 식별 속성
 # This bundles the properties which aren't already part of Android OS
 # unica/<ro.prismproject.device>:<MAJOR.MINOR.PATCH from ro.prismproject.version>/<8-digit commit hash from ro.prismproject.version><.dirty>/<ro.prismproject.timestamp>:<user/userdebug>/<release/test>-keys
 
