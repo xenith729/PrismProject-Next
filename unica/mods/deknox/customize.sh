@@ -115,8 +115,6 @@ APPLY_PATCH "system" "system/framework/services.jar" \
     "$MODPATH/sdp/services.jar/0001-Nuke-Knox-SDP.patch"
 
 # SEC_PRODUCT_FEATURE_KNOX_SUPPORT_DUAL_DAR
-APPLY_PATCH "system" "system/app/Traceur/Traceur.apk" \
-    "$MODPATH/ddar/Traceur.apk/0001-Nuke-Knox-DualDAR.patch"
 APPLY_PATCH "system" "system/framework/framework.jar" \
     "$MODPATH/ddar/framework.jar/0001-Nuke-Knox-DualDAR.patch"
 APPLY_PATCH "system" "system/framework/framework.jar" \
@@ -144,18 +142,6 @@ DECODE_APK "system" "system/framework/knoxsdk.jar"
 HDM_VERSION="$(grep "const.* - .*\\w\"" "$APKTOOL_DIR/system/framework/knoxsdk.jar/smali/com/samsung/android/knox/hdm/HdmManager.smali" | tr -d "\"" | awk '{print $3}' -)"
 HDM_POLICY_TYPE="$(grep "const.* - .*\\w\"" "$APKTOOL_DIR/system/framework/knoxsdk.jar/smali/com/samsung/android/knox/hdm/HdmManager.smali" | tr -d "\"" | awk '{print $5}' -)"
 
-SMALI_PATCH "system" "system/app/Traceur/Traceur.apk" \
-    "smali/com/samsung/android/knox/hdm/HdmManager.smali" "replaceall" \
-    "$HDM_VERSION" \
-    "HDM_VERSION" \
-    > /dev/null
-SMALI_PATCH "system" "system/app/Traceur/Traceur.apk" \
-    "smali/com/samsung/android/knox/hdm/HdmManager.smali" "replaceall" \
-    "$HDM_POLICY_TYPE" \
-    "HDM_POLICY_TYPE" \
-    > /dev/null
-APPLY_PATCH "system" "system/app/Traceur/Traceur.apk" \
-    "$MODPATH/hdm/Traceur.apk/0001-Nuke-Knox-HDM.patch"
 SMALI_PATCH "system" "system/framework/knoxsdk.jar" \
     "smali/com/samsung/android/knox/hdm/HdmManager.smali" "replaceall" \
     "$HDM_VERSION" \
@@ -249,9 +235,6 @@ APPLY_PATCH "system_ext" "priv-app/StorageManager/StorageManager.apk" \
 unset HDM_VERSION HDM_POLICY_TYPE
 
 # SEC_PRODUCT_FEATURE_KNOX_SUPPORT_BLDP
-SMALI_PATCH "system" "system/app/Traceur/Traceur.apk" \
-    "smali/com/samsung/android/knox/integrity/EnhancedAttestationPolicy.smali" "return" \
-    'isBldpEventSupported()Z' 'false'
 SMALI_PATCH "system" "system/framework/knoxsdk.jar" \
     "smali/com/samsung/android/knox/integrity/EnhancedAttestationPolicy.smali" "return" \
     'isBldpEventSupported()Z' 'false'
@@ -276,9 +259,6 @@ SMALI_PATCH "system_ext" "priv-app/SystemUI/SystemUI.apk" \
 
 # SEC_PRODUCT_FEATURE_KNOX_SUPPORT_MPOS
 # TODO add services.jar patch
-SMALI_PATCH "system" "system/app/Traceur/Traceur.apk" \
-    "smali/com/samsung/android/knox/integrity/EnhancedAttestationPolicy.smali" "return" \
-    'isMposSupported()Z' 'false'
 SMALI_PATCH "system" "system/framework/knoxsdk.jar" \
     "smali/com/samsung/android/knox/integrity/EnhancedAttestationPolicy.smali" "return" \
     'isMposSupported()Z' 'false'
