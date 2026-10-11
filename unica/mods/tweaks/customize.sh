@@ -53,10 +53,8 @@ SET_PROP_IF_DIFF() {
     fi
 }
 
-# vendor 파티션 최적화 트윅 적용
-SET_PROP_IF_DIFF "vendor" "ro.apex.updatable" "true"
 SET_PROP_IF_DIFF "vendor" "ro.incremental.enable" "yes"
-SET_PROP_IF_DIFF "vendor" "ro.hwui.use_vulkan" "true"
-SET_PROP_IF_DIFF "vendor" "debug.hwui.use_hint_manager" "true"
-SET_PROP_IF_DIFF "vendor" "persist.sys.fuse.passthrough.enable" "true"
+SET_PROP_IF_DIFF "vendor" "ro.apk_verity.mode" "2"
 SET_PROP_IF_DIFF "system" "persist.device_config.activity_manager_native_boot.use_freezer" "true"
+SET_PROP_IF_DIFF "system" "persist.device_config.runtime_native_boot.iorap_perfetto_enable" "true"
+SET_PROP_IF_DIFF "system" "persist.sys.fuse.passthrough.enable" "true"
