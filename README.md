@@ -10,14 +10,13 @@ PrismProject-Next는 **국내판 삼성 갤럭시 기기를 위한 커스텀 펌
 
 이 프로젝트는 UN1CA 빌드 시스템을 사용하여 필요한 도구를 자동으로 빌드하고, 펌웨어를 다운로드 및 추출한 후, 필요한 패치 및 모드를 적용하여 플래싱 가능한 ZIP 파일을 생성합니다.
 
-이 프로젝트의 목표는 **국내판 삼성 갤럭시 기기에 최적화된 환경을 제공하는 동시에, 최신 소프트웨어 경험 및 향상된 사용자 경험을 제공하는 것**입니다.
+이 프로젝트의 목표는 **국내판 삼성 갤럭시 기기에 최적화된 환경을 제공하는 동시에, 최신 소프트웨어 경험 및 매끄러운 사용자 경험을 제공하는 것**입니다.
 
 프로젝트에 대한 모든 형태의 기여, 제안, 버그 보고 또는 기능 요청을 환영합니다.
 
 ## 기능
 ### 주요 기능
 - 최신 갤럭시 S24 One UI 9.0 펌웨어 기반
-- EROFS 파일 시스템 사용
 - 불필요한 시스템 서비스 및 블로트웨어 제거
 - 순정 소프트웨어에 가깝고 최적화된 경험
 ### Galaxy AI 기능
@@ -28,13 +27,17 @@ PrismProject-Next는 **국내판 삼성 갤럭시 기기를 위한 커스텀 펌
 - 텍스트 변환 어시스트
 - 브라우징 어시스트
 - 포토 어시스트
-- 그리기 어시스트
+- 크리에이티브 스튜디오
+- 마이 팬캠
 - 오디오 지우개
+- 날씨 배경화면
 - Now brief
+- Now nudge
+- 알림 하이라이트
 - 헬스 어시스트
 ### 추가 기능
 - 플래그십 UI 효과 (애니메이션, 라이브 블러, AOD) 지원
-- 플래그십 디스플레이 기능 (색상 최적화, 가변 주사율, 더 밝게, 야외 모드) 지원
+- 플래그십 디스플레이 기능 (색상 최적화, 가변 주사율, 더 밝게) 지원
 - 플래그십 이미지 기능 (사진 리마스터, AI 지우개, 이미지 클리퍼) 지원
 - 삼성 녹스 애플리케이션 사용 가능 (삼성 월렛, 패스 제외)
 - 카메라 셔터음 토글 지원
@@ -59,8 +62,8 @@ PrismProject-Next는 **국내판 삼성 갤럭시 기기를 위한 커스텀 펌
 - [platform_build](https://android.googlesource.com/platform/build/) (ext4_utils, f2fs_utils, signapk) - [Apache License 2.0](https://source.android.com/docs/setup/about/licenses) 하에 배포
 
 ## 크레딧
-- **[Xenith](https://github.com/xenith729)** - 프로젝트 주도, 배너 제작, 빌드 시스템 수정, S21 시리즈 지원, ROM 모드 제작
 - **[salvogiangri](https://github.com/salvogiangri)** - UN1CA 빌드 시스템, ROM 패치, 모드 제작
+- **[Xenith](https://github.com/xenith729)** - 프로젝트 주도, 빌드 시스템 번역 및 최적화, S21 시리즈 지원, ROM 모드 제작
 
 ### 원본 UN1CA 크레딧
 A special thanks goes to the following for their invaluable contributions in no particular order:
