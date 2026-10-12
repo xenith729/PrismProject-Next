@@ -86,6 +86,27 @@ system/priv-app/TService
 system/priv-app/UsimRegistrationKOR
 "
 
+# Google Apps
+SYSTEM_DEBLOAT+="
+system/app/VoiceAccess
+system/app/LiveTranscribe
+system/app/PlayAutoInstallConfig
+system/etc/sysconfig/feature-a11y-preload-voacc.xml
+system/etc/sysconfig/feature-a11y-preload.xml
+"
+PRODUCT_DEBLOAT+="
+app/BardShell
+app/Chrome64
+app/com.google.mainline.adservices
+app/com.google.mainline.telemetry
+app/DuoStub
+app/Gmail2
+app/Maps
+app/YouTube
+priv-app/AndroidDeveloperVerifier
+priv-app/FamilyLinkParentalControls
+"
+
 # eSIM
 [[ "$TARGET_COMMON_SUPPORT_EMBEDDED_SIM" == "false" ]] && SYSTEM_DEBLOAT+="
 system/etc/permissions/privapp-permissions-com.samsung.android.app.esimkeystring.xml
@@ -133,21 +154,6 @@ framework/org.carconnectivity.android.digitalkey.rangingintent.jar
 framework/org.carconnectivity.android.digitalkey.secureelement.jar
 "
 
-# HwModuleTest
-SYSTEM_DEBLOAT+="
-system/app/FactoryAirCommandManager
-system/app/FactoryCameraFB
-system/app/HMT
-system/app/WlanTest
-system/app/BluetoothAgent
-system/etc/permissions/privapp-permissions-com.samsung.android.providers.factory.xml
-system/etc/permissions/privapp-permissions-com.sec.facatfunction.xml
-system/etc/sysconfig/preinstalled-packages-com.sec.android.app.bluetoothagent.xml
-system/priv-app/FacAtFunction
-system/priv-app/FactoryTestProvider
-system/priv-app/SEMFactoryApp
-"
-
 # Samsung Knox
 SYSTEM_DEBLOAT+="
 system/etc/permissions/privapp-permissions-com.skms.android.agent.xml
@@ -173,6 +179,22 @@ system/priv-app/DiagMonAgent97
 system/priv-app/SOAgent77
 "
 SET_FLOATING_FEATURE_CONFIG "SEC_FLOATING_FEATURE_CONTEXTSERVICE_ENABLE_SURVEY_MODE" --delete
+
+# HwModuleTest
+SYSTEM_DEBLOAT+="
+system/app/FactoryAirCommandManager
+system/app/FactoryCameraFB
+system/app/HMT
+system/app/WlanTest
+system/app/DRParser
+system/app/BluetoothAgent
+system/etc/permissions/privapp-permissions-com.samsung.android.providers.factory.xml
+system/etc/permissions/privapp-permissions-com.sec.facatfunction.xml
+system/etc/sysconfig/preinstalled-packages-com.sec.android.app.bluetoothagent.xml
+system/priv-app/FacAtFunction
+system/priv-app/FactoryTestProvider
+system/priv-app/SEMFactoryApp
+"
 
 # Gaming Hub
 SYSTEM_DEBLOAT+="
@@ -244,6 +266,7 @@ system/priv-app/SamsungPositioning
 SYSTEM_DEBLOAT+="
 system/hidden/SmartTutor
 "
+SET_FLOATING_FEATURE_CONFIG "SEC_FLOATING_FEATURE_COMMON_CONFIG_SMARTTUTOR_PACKAGES_NAME" --delete
 SET_FLOATING_FEATURE_CONFIG "SEC_FLOATING_FEATURE_COMMON_CONFIG_SMARTTUTOR_PACKAGES_PATH" --delete
 
 # AppUpdateCenter
@@ -396,26 +419,4 @@ system/app/SmartReminder
 # Galaxy Wearable
 SYSTEM_DEBLOAT+="
 system/app/GearManagerStub
-"
-
-# Google Apps
-SYSTEM_DEBLOAT+="
-system/app/VoiceAccess
-system/app/LiveTranscribe
-system/app/PlayAutoInstallConfig
-system/etc/sysconfig/feature-a11y-preload-voacc.xml
-system/etc/sysconfig/feature-a11y-preload.xml
-"
-
-PRODUCT_DEBLOAT+="
-app/BardShell
-app/Chrome64
-app/com.google.mainline.adservices
-app/com.google.mainline.telemetry
-app/DuoStub
-app/Gmail2
-app/Maps
-app/YouTube
-priv-app/AndroidDeveloperVerifier
-priv-app/FamilyLinkParentalControls
 "
