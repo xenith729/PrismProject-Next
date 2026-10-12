@@ -5,15 +5,15 @@ if [[ "$TARGET_OS_SINGLE_SYSTEM_IMAGE" == "qssi" ]]; then
 elif [[ "$TARGET_OS_SINGLE_SYSTEM_IMAGE" == "essi" ]]; then
     DONOR="a54xnsxx"
 else
-    ABORT "Unknown SSI: $TARGET_OS_SINGLE_SYSTEM_IMAGE"
+    ABORT "알 수 없는 시스템 이미지 유형입니다: $TARGET_OS_SINGLE_SYSTEM_IMAGE"
 fi
 
 DELETE_FROM_WORK_DIR "system" "system/app/BlockchainBasicKit"
 ADD_TO_WORK_DIR "$DONOR" "system" "system/bin/installd" 0 2000 755 "u:object_r:installd_exec:s0"
 ADD_TO_WORK_DIR "$DONOR" "system" "system/bin/vdc" 0 2000 755 "u:object_r:vdc_exec:s0"
 ADD_TO_WORK_DIR "$DONOR" "system" "system/bin/vold" 0 2000 755 "u:object_r:vold_exec:s0"
-# Support legacy sdFAT kernel drivers (pre-API 35)
-# Check unica/patches/legacy/customize.sh for more info.
+# 구형 sdFAT 커널 드라이버 지원 (pre-API 35)
+# unica/patches/legacy/customize.sh에서 추가 정보를 확인하세요.
 if [ "$TARGET_PLATFORM_SDK_VERSION" -lt "35" ] && \
         grep -q "SDFAT" "$WORK_DIR/kernel/boot.img" && \
         ! grep -q "bogus directory:" "$WORK_DIR/kernel/boot.img"; then
@@ -96,7 +96,7 @@ SOURCE_FILE_ATTR="$(grep -F ".source" "$APKTOOL_DIR/system/framework/services.ja
 SOURCE_FILE_ATTR="${SOURCE_FILE_ATTR//\./\\\.}"
 SOURCE_FILE_ATTR="${SOURCE_FILE_ATTR//\"/\\\"}"
 SOURCE_FILE_ATTR="${SOURCE_FILE_ATTR//\//\\\/}"
-LOG "- Replacing SourceFile attribute in /system/system/framework/services.jar"
+LOG "- /system/system/framework/services.jar에서 SourceFile 속성 교체 중..."
 find "$APKTOOL_DIR/system/framework/services.jar" -type f -name "*.smali" -print0 \
     | xargs -0 -I "{}" -P "$(nproc)" sed -i "s/^\.source.*/\.source \"SourceFile\"/g" "{}"
 if [[ "$SOURCE_PRODUCT_SHIPPING_API_LEVEL" != "$TARGET_PRODUCT_SHIPPING_API_LEVEL" ]]; then
@@ -303,11 +303,11 @@ else
         "$MODPATH/blockchain/services.jar/0001-Nuke-BlockchainTZService.patch"
 fi
 
-# TODO get rid of the following features
+# TODO 아래 기능 우회하기
 # SEC_PRODUCT_FEATURE_KNOX_SUPPORT_UCS
 # SEC_PRODUCT_FEATURE_FRAMEWORK_SUPPORT_MOBILE_PAYMENT
 
-LOG "- Restoring original SourceFile attribute in /system/system/framework/services.jar"
+LOG "- /system/system/framework/services.jar에서 SourceFile 원본 속성 복원 중..."
 find "$APKTOOL_DIR/system/framework/services.jar" -type f -name "*.smali" -print0 \
     | xargs -0 -I "{}" -P "$(nproc)" sed -i "s/^\.source.*/$SOURCE_FILE_ATTR/g" "{}"
 

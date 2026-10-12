@@ -1,5 +1,5 @@
 if $DEBUG; then
-    LOG "\033[0;33m! Debug build detected. Skipping\033[0m"
+    LOG "\033[0;33m! 디버그 빌드가 감지되었습니다. 건너 뜁니다\033[0m"
     return 0
 fi
 
@@ -24,7 +24,7 @@ COMPRESS_WEBP()
         fi
     fi
 
-    LOG "- Compressing $FILE_NAME"
+    LOG "- $FILE_NAME 압축 중..."
 
     CMD="cwebp"
     CMD+=" -q 100"
@@ -51,7 +51,7 @@ ENCODE_MP4()
         RES="1440:-1"
     fi
 
-    LOG "- Encoding $FILE_NAME"
+    LOG "- $FILE_NAME 인코딩 중"
 
     CMD="ffmpeg"
     CMD+=" -i \"$FILE_PATH/$FILE_NAME\""
@@ -68,7 +68,7 @@ ENCODE_MP4()
 }
 # ]
 
-ADD_TO_WORK_DIR "pa2qxxx" "system" \
+ADD_TO_WORK_DIR "m3qksx" "system" \
     "system/priv-app/wallpaper-res/wallpaper-res.apk" 0 0 644 "u:object_r:system_file:s0"
 DECODE_APK "system" "system/priv-app/wallpaper-res/wallpaper-res.apk"
 for f in "$APKTOOL_DIR/system/priv-app/wallpaper-res/wallpaper-res.apk/res/drawable-nodpi/dex_wallpaper_"*.webp; do
@@ -80,7 +80,7 @@ done
 for f in "$APKTOOL_DIR/system/priv-app/wallpaper-res/wallpaper-res.apk/res/raw/video_"*.mp4; do
     ENCODE_MP4 "$f"
 done
-LOG "- Downloading latest Samsung Wallpaper app"
+LOG "- 최신 삼성 배경화면 앱 다운로드 중..."
 DOWNLOAD_FILE "$(GET_GALAXY_STORE_DOWNLOAD_URL "000008552712")" \
     "$WORK_DIR/system/system/priv-app/SpriteWallpaper/SpriteWallpaper.apk"
 APPLY_PATCH "system" "system/priv-app/SpriteWallpaper/SpriteWallpaper.apk" \

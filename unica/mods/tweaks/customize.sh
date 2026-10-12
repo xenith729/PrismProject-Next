@@ -1,10 +1,10 @@
-# Disable app compaction
-# Guard the patch as the source firmware might have this already disabled
+# 앱 압축 비홠어화
+# 소스 펌웨어에서 이미 비활성화된 경우 적용하지 않습니다.
 LOG "- Applying \"Disable app compaction\" to /system/system/framework/services.jar"
 APPLY_PATCH "system" "system/framework/services.jar" \
     "$MODPATH/appcompactor/services.jar/0001-Disable-app-compaction.patch" &> /dev/null || true
 
-# Disable FM Radio country restrictions
+# FM 라디오 지역 제한 해제
 if [[ "$(GET_FLOATING_FEATURE_CONFIG "SEC_FLOATING_FEATURE_FMRADIO_CONFIG_CHIP_VENDOR")" != "0" ]]; then
     SET_FLOATING_FEATURE_CONFIG "SEC_FLOATING_FEATURE_FMRADIO_CONFIG_AVOID_REGION" --delete
 

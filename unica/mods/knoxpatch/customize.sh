@@ -47,7 +47,7 @@ SMALI_PATCH "system" "system/framework/services.jar" \
 
 # Spoof ROT/IntegrityStatus in Knox Matrix
 if [ -f "$WORK_DIR/system/system/priv-app/KmxService/KmxService.apk" ]; then
-    LOG "- Downloading latest Knox Matrix app"
+    LOG "- 최신 Knox Matrix 앱 다운로드 중..."
     DOWNLOAD_FILE "$(GET_GALAXY_STORE_DOWNLOAD_URL "com.samsung.android.kmxservice")" \
         "$WORK_DIR/system/system/priv-app/KmxService/KmxService.apk"
     SMALI_PATCH "system" "system/priv-app/KmxService/KmxService.apk" \
