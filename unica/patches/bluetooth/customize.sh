@@ -170,12 +170,18 @@ fi
 DECODE_APEX "$WORK_DIR/system/system/apex/com.android.bt.apex"
 EXTRACT_PAYLOAD
 
+BLUETOOTH_APK="$(find "$TMP_DIR/unknown/apex_payload/app" -maxdepth 2 -name "Bluetooth.apk" 2>/dev/null | head -n 1)"
+if [ -z "$BLUETOOTH_APK" ] || [ ! -f "$BLUETOOTH_APK" ]; then
+    ABORT "apex_payload 내에서 Bluetooth.apk를 찾을 수 없습니다."
+fi
+BLUETOOTH_DIR="$(basename "$(dirname "$BLUETOOTH_APK")")"
+
 # SEC_PRODUCT_FEATURE_BLUETOOTH_SUPPORT_A2DPSINK_PROFILE
 if $SOURCE_BLUETOOTH_SUPPORT_A2DPSINK_PROFILE; then
     if ! $TARGET_BLUETOOTH_SUPPORT_A2DPSINK_PROFILE; then
-        DECODE_APK_IN_APEX "$TMP_DIR/unknown/apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk"
-        LOG "- apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk에 \"SUPPORT_A2DPSINK_PROFILE 지원 비활성화\" 패치 적용 중"
-        APPLY_PATCH "system" "system/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk" \
+        DECODE_APK_IN_APEX "$BLUETOOTH_APK"
+        LOG "- apex_payload/app/$BLUETOOTH_DIR/Bluetooth.apk에 \"SUPPORT_A2DPSINK_PROFILE 지원 비활성화\" 패치 적용 중"
+        APPLY_PATCH "system" "system/app/$BLUETOOTH_DIR/Bluetooth.apk" \
             "$MODPATH/a2dp_sink/Bluetooth.apk/0001-Disable-SUPPORT_A2DPSINK_PROFILE-support.patch" \
             > /dev/null
         DECODE_APK_IN_APEX "$TMP_DIR/unknown/apex_payload/javalib/framework-bluetooth.jar"
@@ -194,9 +200,9 @@ fi
 # SEC_PRODUCT_FEATURE_BLUETOOTH_SUPPORT_A2DP_SBM
 if ! $SOURCE_BLUETOOTH_SUPPORT_A2DP_SBM; then
     if $TARGET_BLUETOOTH_SUPPORT_A2DP_SBM; then
-        DECODE_APK_IN_APEX "$TMP_DIR/unknown/apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk"
-        LOG "- apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk에 \"SUPPORT_A2DP_SBM 지원 활성화\" 패치 적용 중"
-        APPLY_PATCH "system" "system/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk" \
+        DECODE_APK_IN_APEX "$BLUETOOTH_APK"
+        LOG "- apex_payload/app/$BLUETOOTH_DIR/Bluetooth.apk에 \"SUPPORT_A2DP_SBM 지원 활성화\" 패치 적용 중"
+        APPLY_PATCH "system" "system/app/$BLUETOOTH_DIR/Bluetooth.apk" \
             "$MODPATH/sbm/Bluetooth.apk/0001-Enable-SUPPORT_A2DP_SBM-support.patch" \
             > /dev/null
     fi
@@ -210,9 +216,9 @@ fi
 # SEC_PRODUCT_FEATURE_BLUETOOTH_SUPPORT_HEAD_SAR_BACKOFF
 if ! $SOURCE_BLUETOOTH_SUPPORT_HEAD_SAR_BACKOFF; then
     if $TARGET_BLUETOOTH_SUPPORT_HEAD_SAR_BACKOFF; then
-        DECODE_APK_IN_APEX "$TMP_DIR/unknown/apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk"
-        LOG "- apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk에 \"SUPPORT_HEAD_SAR_BACKOFF 지원 활성화\" 패치 적용 중"
-        APPLY_PATCH "system" "system/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk" \
+        DECODE_APK_IN_APEX "$BLUETOOTH_APK"
+        LOG "- apex_payload/app/$BLUETOOTH_DIR/Bluetooth.apk에 \"SUPPORT_HEAD_SAR_BACKOFF 지원 활성화\" 패치 적용 중"
+        APPLY_PATCH "system" "system/app/$BLUETOOTH_DIR/Bluetooth.apk" \
             "$MODPATH/head_sar/Bluetooth.apk/0001-Enable-SUPPORT_HEAD_SAR_BACKOFF-support.patch" \
             > /dev/null
     fi
@@ -226,17 +232,17 @@ fi
 # SEC_PRODUCT_FEATURE_BLUETOOTH_SUPPORT_XLNA_CONTROL
 if $SOURCE_BLUETOOTH_SUPPORT_XLNA_CONTROL; then
     if ! $TARGET_BLUETOOTH_SUPPORT_XLNA_CONTROL; then
-        DECODE_APK_IN_APEX "$TMP_DIR/unknown/apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk"
-        LOG "- apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk에 \"SUPPORT_XLNA_CONTROL 지원 비활성화\" 패치 적용 중"
-        APPLY_PATCH "system" "system/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk" \
+        DECODE_APK_IN_APEX "$BLUETOOTH_APK"
+        LOG "- apex_payload/app/$BLUETOOTH_DIR/Bluetooth.apk에 \"SUPPORT_XLNA_CONTROL 지원 비활성화\" 패치 적용 중"
+        APPLY_PATCH "system" "system/app/$BLUETOOTH_DIR/Bluetooth.apk" \
             "$MODPATH/xlna/Bluetooth.apk/0001-Disable-SUPPORT_XLNA_CONTROL-support.patch" \
             > /dev/null
     fi
 else
     if $TARGET_BLUETOOTH_SUPPORT_XLNA_CONTROL; then
-        DECODE_APK_IN_APEX "$TMP_DIR/unknown/apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk"
-        LOG "- apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk에 \"SUPPORT_XLNA_CONTROL 지원 활성화\" 패치 적용 중"
-        APPLY_PATCH "system" "system/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk" \
+        DECODE_APK_IN_APEX "$BLUETOOTH_APK"
+        LOG "- apex_payload/app/$BLUETOOTH_DIR/Bluetooth.apk에 \"SUPPORT_XLNA_CONTROL 지원 활성화\" 패치 적용 중"
+        APPLY_PATCH "system" "system/app/$BLUETOOTH_DIR/Bluetooth.apk" \
             "$MODPATH/xlna/Bluetooth.apk/0001-Enable-SUPPORT_XLNA_CONTROL-support.patch" \
             > /dev/null
     fi
@@ -249,7 +255,7 @@ LOG "- apex_payload/lib64/libbluetooth_jni.so에서 \"28f7773948050037\"을(를)
 HEX_PATCH "$TMP_DIR/unknown/apex_payload/lib64/libbluetooth_jni.so" \
     "28f7773948050037" "28f777392a000014" > /dev/null
 
-BUILD_APK_IN_APEX "$TMP_DIR/unknown/apex_payload/app/Bluetooth@BP2A.250605.031.A3/Bluetooth.apk"
+BUILD_APK_IN_APEX "$BLUETOOTH_APK"
 BUILD_APK_IN_APEX "$TMP_DIR/unknown/apex_payload/javalib/framework-bluetooth.jar"
 BUILD_PAYLOAD
 SIGN_PAYLOAD
@@ -258,7 +264,7 @@ SIGN_APEX "$WORK_DIR/system/system/apex/com.android.bt.apex"
 
 rm -rf "$TMP_DIR"
 
-unset SOURCE_FIRMWARE_PATH
+unset SOURCE_FIRMWARE_PATH BLUETOOTH_APK BLUETOOTH_DIR
 unset -f BUILD_APK_IN_APEX BUILD_APEX BUILD_PAYLOAD \
     DECODE_APEX DECODE_APK_IN_APEX EXTRACT_PAYLOAD \
     LOG_MISSING_PATCHES SIGN_APEX SIGN_PAYLOAD
