@@ -82,62 +82,6 @@ if [[ "$SOURCE_AUDIO_CONFIG_RECORDALIVE_LIB_VERSION" != "$TARGET_AUDIO_CONFIG_RE
     fi
 fi
 
-# SEC_PRODUCT_FEATURE_AUDIO_CONFIG_HAPTIC
-if $SOURCE_AUDIO_SUPPORT_ACH_RINGTONE; then
-    if ! $TARGET_AUDIO_SUPPORT_ACH_RINGTONE; then
-        APPLY_PATCH "system" "system/framework/framework.jar" \
-            "$MODPATH/audio/ach/framework.jar/0001-Disable-ACH-ringtone-support.patch"
-    fi
-else
-    if $TARGET_AUDIO_SUPPORT_ACH_RINGTONE; then
-        # TODO handle this condition
-        LOG_MISSING_PATCHES "SOURCE_AUDIO_SUPPORT_ACH_RINGTONE" "TARGET_AUDIO_SUPPORT_ACH_RINGTONE"
-    fi
-fi
-
-# SEC_PRODUCT_FEATURE_AUDIO_SUPPORT_DUAL_SPEAKER
-if $SOURCE_AUDIO_SUPPORT_DUAL_SPEAKER; then
-    if ! $TARGET_AUDIO_SUPPORT_DUAL_SPEAKER; then
-        SET_FLOATING_FEATURE_CONFIG "SEC_FLOATING_FEATURE_AUDIO_SUPPORT_DUAL_SPEAKER" --delete
-
-        APPLY_PATCH "system" "system/framework/framework.jar" \
-            "$MODPATH/audio/dual_speaker/framework.jar/0001-Disable-dual-speaker-support.patch"
-        APPLY_PATCH "system" "system/framework/services.jar" \
-            "$MODPATH/audio/dual_speaker/services.jar/0001-Disable-dual-speaker-support.patch"
-    fi
-else
-    if $TARGET_AUDIO_SUPPORT_DUAL_SPEAKER; then
-        # TODO handle this condition
-        LOG_MISSING_PATCHES "SOURCE_AUDIO_SUPPORT_DUAL_SPEAKER" "TARGET_AUDIO_SUPPORT_DUAL_SPEAKER"
-    fi
-fi
-
-# SEC_PRODUCT_FEATURE_AUDIO_SUPPORT_VIRTUAL_VIBRATION_SOUND
-if $SOURCE_AUDIO_SUPPORT_VIRTUAL_VIBRATION_SOUND; then
-  if ! $TARGET_AUDIO_SUPPORT_VIRTUAL_VIBRATION_SOUND; then
-        APPLY_PATCH "system" "system/framework/framework.jar" \
-            "$MODPATH/audio/virtual_vib/framework.jar/0001-Disable-virtual-vibration-support.patch"
-        APPLY_PATCH "system" "system/framework/services.jar" \
-            "$MODPATH/audio/virtual_vib/services.jar/0001-Disable-virtual-vibration-support.patch"
-        SMALI_PATCH "system" "system/framework/services.jar" \
-            "smali/com/android/server/audio/BtHelper\$\$ExternalSyntheticLambda0.smali" "remove"
-        EVAL "sed -i \"/.source/q\" \"$APKTOOL_DIR/system/framework/services.jar/smali_classes2/com/android/server/vibrator/VibratorManagerInternal.smali\""
-        SMALI_PATCH "system" "system/framework/services.jar" \
-            "smali_classes2/com/android/server/vibrator/VibratorManagerService\$SamsungBroadcastReceiver\$\$ExternalSyntheticLambda1.smali" "remove"
-        SMALI_PATCH "system" "system/framework/services.jar" \
-            "smali_classes2/com/android/server/vibrator/VirtualVibSoundHelper.smali" "remove"
-        APPLY_PATCH "system" "system/priv-app/SecSettings/SecSettings.apk" \
-            "$MODPATH/audio/virtual_vib/SecSettings.apk/0001-Disable-virtual-vibration-support.patch"
-        APPLY_PATCH "system" "system/priv-app/SettingsProvider/SettingsProvider.apk" \
-            "$MODPATH/audio/virtual_vib/SettingsProvider.apk/0001-Disable-virtual-vibration-support.patch"
-    fi
-else
-    if $TARGET_AUDIO_SUPPORT_VIRTUAL_VIBRATION_SOUND; then
-        # TODO handle this condition
-        LOG_MISSING_PATCHES "SOURCE_AUDIO_SUPPORT_VIRTUAL_VIBRATION_SOUND" "TARGET_AUDIO_SUPPORT_VIRTUAL_VIBRATION_SOUND"
-    fi
-fi
-
 # SEC_PRODUCT_FEATURE_COMMON_CONFIG_MDNIE_MODE
 if [[ "$SOURCE_COMMON_CONFIG_MDNIE_MODE" != "$TARGET_COMMON_CONFIG_MDNIE_MODE" ]]; then
     SET_FLOATING_FEATURE_CONFIG "SEC_FLOATING_FEATURE_COMMON_CONFIG_MDNIE_MODE" "$TARGET_COMMON_CONFIG_MDNIE_MODE"
