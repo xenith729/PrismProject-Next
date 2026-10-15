@@ -23,18 +23,21 @@ if [[ "$SOURCE_DVFSAPP_CONFIG_DVFS_POLICY_FILENAME" != "$TARGET_DVFSAPP_CONFIG_D
         _LOG "\"$TARGET_DVFSAPP_CONFIG_DVFS_POLICY_FILENAME\" does not exist in SDHMS app"
     fi
 
-    # com/sec/android/sdhms/performance/PerformanceFeature
-    SMALI_PATCH "system" "system/priv-app/SamsungDeviceHealthManagerService/SamsungDeviceHealthManagerService.apk" \
-        "smali/r1/c.smali" "replace" \
-        "<clinit>()V" \
-        "$SOURCE_DVFSAPP_CONFIG_DVFS_POLICY_FILENAME" \
-        "$TARGET_DVFSAPP_CONFIG_DVFS_POLICY_FILENAME"
-    # com/sec/android/sdhms/performance/settings/PerformanceProperties
-    SMALI_PATCH "system" "system/priv-app/SamsungDeviceHealthManagerService/SamsungDeviceHealthManagerService.apk" \
-        "smali/z1/e.smali" "replace" \
-        "<init>(Landroid/content/Context;)V" \
-        "$SOURCE_DVFSAPP_CONFIG_DVFS_POLICY_FILENAME" \
-        "$TARGET_DVFSAPP_CONFIG_DVFS_POLICY_FILENAME"
+    # SamsungDeviceHealthManagerService smali 내에서 DVFS 정책 파일명 동적 검색 및 치환
+    local SDHMS_DIR="$APKTOOL_DIR/system/priv-app/SamsungDeviceHealthManagerService/SamsungDeviceHealthManagerService.apk"
+    local MATCHED_FILES=()
+    while IFS= read -r f; do
+        MATCHED_FILES+=("$f")
+    done < <(grep -rl "$SOURCE_DVFSAPP_CONFIG_DVFS_POLICY_FILENAME" "$SDHMS_DIR/smali"* 2>/dev/null)
+
+    if [ ${#MATCHED_FILES[@]} -eq 0 ]; then
+        _LOG "SDHMS smali 내에서 \"$SOURCE_DVFSAPP_CONFIG_DVFS_POLICY_FILENAME\"을(를) 찾을 수 없습니다."
+    else
+        for f in "${MATCHED_FILES[@]}"; do
+            LOG "- ${f//$SDHMS_DIR\//}에서 \"$SOURCE_DVFSAPP_CONFIG_DVFS_POLICY_FILENAME\"을(를) \"$TARGET_DVFSAPP_CONFIG_DVFS_POLICY_FILENAME\"(으)로 교체 중"
+            sed -i "s|\"$SOURCE_DVFSAPP_CONFIG_DVFS_POLICY_FILENAME\"|\"$TARGET_DVFSAPP_CONFIG_DVFS_POLICY_FILENAME\"|g" "$f"
+        done
+    fi
 fi
 
 # SEC_PRODUCT_FEATURE_DVFSAPP_CONFIG_SSRM_POLICY_FILENAME
@@ -63,12 +66,19 @@ if [[ "$SOURCE_DVFSAPP_CONFIG_SSRM_POLICY_FILENAME" != "$TARGET_DVFSAPP_CONFIG_S
         EVAL "cp -a \"$MODPATH/assets/siop_default.xml\" \"$APKTOOL_DIR/system/priv-app/SamsungDeviceHealthManagerService/SamsungDeviceHealthManagerService.apk/assets/ssrm_default.xml\""
     fi
 
-    # com/sec/android/sdhms/util/Feature
-    SMALI_PATCH "system" "system/priv-app/SamsungDeviceHealthManagerService/SamsungDeviceHealthManagerService.apk" \
-        "smali/U1/w.smali" "replace" \
-        "<clinit>()V" \
-        "$SOURCE_DVFSAPP_CONFIG_SSRM_POLICY_FILENAME" \
-        "$TARGET_DVFSAPP_CONFIG_SSRM_POLICY_FILENAME"
+    # SamsungDeviceHealthManagerService smali 내에서 SSRM 정책 파일명 동적 검색 및 치환
+    local SDHMS_DIR="$APKTOOL_DIR/system/priv-app/SamsungDeviceHealthManagerService/SamsungDeviceHealthManagerService.apk"
+    local MATCHED_SSRM_FILES=()
+    while IFS= read -r f; do
+        MATCHED_SSRM_FILES+=("$f")
+    done < <(grep -rl "$SOURCE_DVFSAPP_CONFIG_SSRM_POLICY_FILENAME" "$SDHMS_DIR/smali"* 2>/dev/null)
+
+    if [ ${#MATCHED_SSRM_FILES[@]} -gt 0 ]; then
+        for f in "${MATCHED_SSRM_FILES[@]}"; do
+            LOG "- ${f//$SDHMS_DIR\//}에서 \"$SOURCE_DVFSAPP_CONFIG_SSRM_POLICY_FILENAME\"을(를) \"$TARGET_DVFSAPP_CONFIG_SSRM_POLICY_FILENAME\"(으)로 교체 중"
+            sed -i "s|\"$SOURCE_DVFSAPP_CONFIG_SSRM_POLICY_FILENAME\"|\"$TARGET_DVFSAPP_CONFIG_SSRM_POLICY_FILENAME\"|g" "$f"
+        done
+    fi
 fi
 
 if [ -f "$SRC_DIR/target/$TARGET_CODENAME/dvfs/siop_model.xml" ]; then
