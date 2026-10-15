@@ -22,6 +22,26 @@ LOG_MISSING_PATCHES()
         ABORT "${MESSAGE}. 중단합니다."
     fi
 }
+
+REQUIRE_FIXED_COUNT()
+{
+    local FILE="$1"
+    local VALUE="$2"
+    local EXPECTED="$3"
+    local DESCRIPTION="$4"
+    local ACTUAL
+
+    if [ ! -f "$FILE" ]; then
+        ABORT "Android 17 product-feature 게이트가 존재하지 않습니다: ${FILE//$APKTOOL_DIR\//}"
+        return 1
+    fi
+
+    ACTUAL="$(grep -F -c -- "$VALUE" "$FILE" || true)"
+    if [ "$ACTUAL" -ne "$EXPECTED" ]; then
+        ABORT "Unexpected Android 17 $DESCRIPTION shape (expected $EXPECTED exact match(es), found $ACTUAL)"
+        return 1
+    fi
+}
 # ]
 
 # SEC_PRODUCT_FEATURE_BUILD_MAINLINE_API_LEVEL
