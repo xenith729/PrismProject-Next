@@ -82,6 +82,92 @@ if [[ "$SOURCE_AUDIO_CONFIG_RECORDALIVE_LIB_VERSION" != "$TARGET_AUDIO_CONFIG_RE
     fi
 fi
 
+# SEC_PRODUCT_FEATURE_AUDIO_CONFIG_HAPTIC
+if $SOURCE_AUDIO_SUPPORT_ACH_RINGTONE; then
+    if ! $TARGET_AUDIO_SUPPORT_ACH_RINGTONE; then
+        SMALI_PATCH "system" "system/framework/framework.jar" \
+            "smali_classes6/com/samsung/android/audio/Rune.smali" "replace" \
+            "<clinit>()V" \
+            'sput-boolean v2, Lcom/samsung/android/audio/Rune;->SEC_AUDIO_SUPPORT_ACH_RINGTONE:Z' \
+            'sput-boolean v1, Lcom/samsung/android/audio/Rune;->SEC_AUDIO_SUPPORT_ACH_RINGTONE:Z'
+        SMALI_PATCH "system" "system/framework/framework.jar" \
+            "smali_classes6/com/samsung/android/vibrator/VibRune.smali" "replaceall" \
+            '.field public static final blacklist SUPPORT_ACH:Z = true' \
+            '.field public static final blacklist SUPPORT_ACH:Z = false'
+    fi
+else
+    if $TARGET_AUDIO_SUPPORT_ACH_RINGTONE; then
+        # TODO handle this condition
+        LOG_MISSING_PATCHES "SOURCE_AUDIO_SUPPORT_ACH_RINGTONE" "TARGET_AUDIO_SUPPORT_ACH_RINGTONE"
+    fi
+fi
+
+# SEC_PRODUCT_FEATURE_AUDIO_SUPPORT_DUAL_SPEAKER
+if $SOURCE_AUDIO_SUPPORT_DUAL_SPEAKER; then
+    if ! $TARGET_AUDIO_SUPPORT_DUAL_SPEAKER; then
+        SET_FLOATING_FEATURE_CONFIG "SEC_FLOATING_FEATURE_AUDIO_SUPPORT_DUAL_SPEAKER" --delete
+
+        APPLY_PATCH "system" "system/framework/framework.jar" \
+            "$MODPATH/audio/dual_speaker/framework.jar/0001-Disable-dual-speaker-support.patch"
+        APPLY_PATCH "system" "system/framework/services.jar" \
+            "$MODPATH/audio/dual_speaker/services.jar/0001-Disable-dual-speaker-support.patch"
+    fi
+else
+    if $TARGET_AUDIO_SUPPORT_DUAL_SPEAKER; then
+        # TODO handle this condition
+        LOG_MISSING_PATCHES "SOURCE_AUDIO_SUPPORT_DUAL_SPEAKER" "TARGET_AUDIO_SUPPORT_DUAL_SPEAKER"
+    fi
+fi
+
+# SEC_PRODUCT_FEATURE_AUDIO_SUPPORT_VIRTUAL_VIBRATION_SOUND
+if $SOURCE_AUDIO_SUPPORT_VIRTUAL_VIBRATION_SOUND; then
+    if ! $TARGET_AUDIO_SUPPORT_VIRTUAL_VIBRATION_SOUND; then
+        SMALI_PATCH "system" "system/framework/framework.jar" \
+            "smali_classes6/com/samsung/android/audio/Rune.smali" "replaceall" \
+            '.field public static final blacklist SEC_AUDIO_SUPPORT_VIRTUAL_VIBRATION_SOUND:Z = true' \
+            '.field public static final blacklist SEC_AUDIO_SUPPORT_VIRTUAL_VIBRATION_SOUND:Z = false'
+        SMALI_PATCH "system" "system/framework/framework.jar" \
+            "smali_classes6/com/samsung/android/vibrator/VibRune.smali" "replaceall" \
+            '.field public static final blacklist SUPPORT_VIRTUAL_VIBRATION_SOUND:Z = true' \
+            '.field public static final blacklist SUPPORT_VIRTUAL_VIBRATION_SOUND:Z = false'
+        SMALI_PATCH "system" "system/framework/services.jar" \
+            "smali_classes2/com/android/server/vibrator/VirtualVibSoundHelper.smali" "null" \
+            "playVirtualSoundIfNeeded(Ljava/lang/String;Landroid/os/VibrationAttributes;Z)V"
+        SMALI_PATCH "system" "system/framework/services.jar" \
+            "smali_classes2/com/android/server/vibrator/VirtualVibSoundHelper.smali" "null" \
+            "stopVirtualSound(Ljava/lang/String;)V"
+        SMALI_PATCH "system" "system/priv-app/SecSettings/SecSettings.apk" \
+            "smali_classes3/com/samsung/android/settings/asbase/vibration/VirtualVibrationSoundPreferenceController.smali" "return" \
+            "getAvailabilityStatus()I" \
+            "3"
+        SMALI_PATCH "system" "system/priv-app/SecSettings/SecSettings.apk" \
+            "smali_classes3/com/samsung/android/settings/asbase/vibration/VirtualVibrationSoundPreferenceController.smali" "replace" \
+            "displayPreference(Landroidx/preference/PreferenceScreen;)V" \
+            "const/4 p1, 0x1" \
+            "const/4 p1, 0x0"
+        SMALI_PATCH "system" "system/priv-app/SecSettings/SecSettings.apk" \
+            "smali_classes3/com/samsung/android/settings/asbase/vibration/VirtualVibrationSoundPreferenceController.smali" "replace" \
+            "updateState(Landroidx/preference/Preference;)V" \
+            "const/4 p1, 0x1" \
+            "const/4 p1, 0x0"
+
+        DECODE_APK "system" "system/priv-app/SettingsProvider/SettingsProvider.apk"
+        SETTINGS_PROVIDER_SMALI="$APKTOOL_DIR/system/priv-app/SettingsProvider/SettingsProvider.apk/smali/com/android/providers/settings/DatabaseHelper\$1.smali"
+        REQUIRE_FIXED_COUNT "$SETTINGS_PROVIDER_SMALI" \
+            'const-string v1, "vibration_sound_enabled"' 1 \
+            "SettingsProvider virtual-vibration default"
+        REQUIRE_FIXED_COUNT "$SETTINGS_PROVIDER_SMALI" \
+            'const/4 v8, 0x0' 1 \
+            "SettingsProvider disabled default register"
+        unset SETTINGS_PROVIDER_SMALI
+    fi
+else
+    if $TARGET_AUDIO_SUPPORT_VIRTUAL_VIBRATION_SOUND; then
+        # TODO handle this condition
+        LOG_MISSING_PATCHES "SOURCE_AUDIO_SUPPORT_VIRTUAL_VIBRATION_SOUND" "TARGET_AUDIO_SUPPORT_VIRTUAL_VIBRATION_SOUND"
+    fi
+fi
+
 # SEC_PRODUCT_FEATURE_COMMON_CONFIG_MDNIE_MODE
 if [[ "$SOURCE_COMMON_CONFIG_MDNIE_MODE" != "$TARGET_COMMON_CONFIG_MDNIE_MODE" ]]; then
     SET_FLOATING_FEATURE_CONFIG "SEC_FLOATING_FEATURE_COMMON_CONFIG_MDNIE_MODE" "$TARGET_COMMON_CONFIG_MDNIE_MODE"
