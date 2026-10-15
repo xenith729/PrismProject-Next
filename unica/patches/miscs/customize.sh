@@ -15,9 +15,8 @@ SMALI_PATCH "system" "system/framework/framework.jar" \
 # shellcheck disable=SC2016
 # Disable RescueParty
 SMALI_PATCH "system" "system/framework/services.jar" \
-    "smali/com/android/server/SecRescueParty.smali" "return" \
-    '-$$Nest$smisDisabled()Z' \
-    'true'
+        "smali/com/android/server/SecRescueParty.smali" "null" \
+        'secRescuePartyRegisterHealthObserver(Landroid/content/Context;)V'
 
 # Better model detection in FreecessController
 SMALI_PATCH "system" "system/framework/services.jar" \
