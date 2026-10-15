@@ -608,11 +608,6 @@ if [[ "$SOURCE_LCD_CONFIG_HFR_MODE" != "$TARGET_LCD_CONFIG_HFR_MODE" ]]; then
         "<clinit>()V" \
         "$SOURCE_LCD_CONFIG_HFR_MODE" \
         "$TARGET_LCD_CONFIG_HFR_MODE"
-    SMALI_PATCH "system" "system/framework/gamemanager.jar" \
-        "smali/com/samsung/android/game/VrrManager.smali" "replace" \
-        "isVariableRefreshRateSupported()Ljava/lang/String;" \
-        "$SOURCE_LCD_CONFIG_HFR_MODE" \
-        "$TARGET_LCD_CONFIG_HFR_MODE"
     SMALI_PATCH "system" "system/framework/secinputdev-service.jar" \
         "smali/com/samsung/android/hardware/secinputdev/utils/SemInputFeatures.smali" "replaceall" \
         "\\\"$SOURCE_LCD_CONFIG_HFR_MODE\\\"" \
