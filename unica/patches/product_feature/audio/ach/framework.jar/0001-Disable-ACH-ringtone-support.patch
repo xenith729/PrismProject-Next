@@ -12,10 +12,12 @@ diff --git a/smali_classes6/com/samsung/android/audio/Rune.smali b/smali_classes
 index da0fff18..67f0c356 100644
 --- a/smali_classes6/com/samsung/android/audio/Rune.smali
 +++ b/smali_classes6/com/samsung/android/audio/Rune.smali
-@@ -470,3 +470,3 @@
+@@ -470,5 +470,5 @@
 -    sput-boolean v2, Lcom/samsung/android/audio/Rune;->SEC_AUDIO_SUPPORT_ACH_RINGTONE:Z
 +    sput-boolean v1, Lcom/samsung/android/audio/Rune;->SEC_AUDIO_SUPPORT_ACH_RINGTONE:Z
+
      sput-boolean v1, Lcom/samsung/android/audio/Rune;->SEC_AUDIO_EXTRA_RINGTONES_ALGERIA:Z
+
      sput-boolean v1, Lcom/samsung/android/audio/Rune;->SEC_AUDIO_SAR_RCV_CONTROL_FOR_FLIP:Z
  
 diff --git a/smali_classes6/com/samsung/android/vibrator/VibRune.smali b/smali_classes6/com/samsung/android/vibrator/VibRune.smali
