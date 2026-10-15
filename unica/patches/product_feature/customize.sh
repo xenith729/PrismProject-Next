@@ -531,40 +531,34 @@ if [[ "$SOURCE_LCD_CONFIG_SEAMLESS_BRT" != "$TARGET_LCD_CONFIG_SEAMLESS_BRT" ]] 
             "getMainInstance()Lcom/samsung/android/hardware/display/RefreshRateConfig;" \
             "$SOURCE_LCD_CONFIG_SEAMLESS_LUX" \
             "$TARGET_LCD_CONFIG_SEAMLESS_LUX"
-        elif [[ "$SOURCE_LCD_CONFIG_SEAMLESS_BRT" == "none" ]] && \
-                [[ "$SOURCE_LCD_CONFIG_SEAMLESS_LUX" == "none" ]] && \
-                [[ "$TARGET_LCD_CONFIG_SEAMLESS_BRT" != "none" ]] && \
-                [[ "$TARGET_LCD_CONFIG_SEAMLESS_LUX" != "none" ]]; then
-            #* Add seamless brightness and lux thresholds
-            SMALI_PATCH "system" "system/framework/framework.jar" \
-                "smali_classes6/com/samsung/android/hardware/display/RefreshRateConfig.smali" "replace" \
-                "getMainInstance()Lcom/samsung/android/hardware/display/RefreshRateConfig;" \
-                ".locals 4" \
-                ".locals 5"
-            SMALI_PATCH "system" "system/framework/framework.jar" \
-                "smali_classes6/com/samsung/android/hardware/display/RefreshRateConfig.smali" "replace" \
-                "getMainInstance()Lcom/samsung/android/hardware/display/RefreshRateConfig;" \
-                'const-string v3, ""' \
-                "const-string v3, \"$TARGET_LCD_CONFIG_SEAMLESS_BRT\""
-            SMALI_PATCH "system" "system/framework/framework.jar" \
-                "smali_classes6/com/samsung/android/hardware/display/RefreshRateConfig.smali" "replace" \
-                "getMainInstance()Lcom/samsung/android/hardware/display/RefreshRateConfig;" \
-                'invoke-direct {v0, v3, v3, v1, v2}, Lcom/samsung/android/hardware/display/RefreshRateConfig$BrightnessThreshold;-><init>(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V' \
-                "const-string v4, \"$TARGET_LCD_CONFIG_SEAMLESS_LUX\"
-        invoke-direct {v0, v3, v4, v1, v2}, Lcom/samsung/android/hardware/display/RefreshRateConfig\$BrightnessThreshold;-><init>(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V"
-            SMALI_PATCH "system" "system/framework/framework.jar" \
-                "smali_classes6/com/samsung/android/hardware/display/RefreshRateConfig.smali" "replace" \
-                "getMainInstance()Lcom/samsung/android/hardware/display/RefreshRateConfig;" \
-                'invoke-static {v1, v2, v3, v0}, Lcom/samsung/android/hardware/display/RefreshRateConfig;->createRefreshRateConfig(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/samsung/android/hardware/display/RefreshRateConfig$BrightnessThreshold;)Lcom/samsung/android/hardware/display/RefreshRateConfig;' \
-                "const-string v3, \"\"
-        invoke-static {v1, v2, v3, v0}, Lcom/samsung/android/hardware/display/RefreshRateConfig;->createRefreshRateConfig(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/samsung/android/hardware/display/RefreshRateConfig\$BrightnessThreshold;)Lcom/samsung/android/hardware/display/RefreshRateConfig;"
+    elif [[ "$SOURCE_LCD_CONFIG_SEAMLESS_BRT" == "none" ]] && \
+            [[ "$SOURCE_LCD_CONFIG_SEAMLESS_LUX" == "none" ]] && \
+            [[ "$TARGET_LCD_CONFIG_SEAMLESS_BRT" != "none" ]] && \
+            [[ "$TARGET_LCD_CONFIG_SEAMLESS_LUX" != "none" ]]; then
+        SMALI_PATCH "system" "system/framework/framework.jar" \
+            "smali_classes6/com/samsung/android/hardware/display/RefreshRateConfig.smali" "replace" \
+            "getMainInstance()Lcom/samsung/android/hardware/display/RefreshRateConfig;" \
+            ".locals 4" \
+            ".locals 5"
+        SMALI_PATCH "system" "system/framework/framework.jar" \
+            "smali_classes6/com/samsung/android/hardware/display/RefreshRateConfig.smali" "replace" \
+            "getMainInstance()Lcom/samsung/android/hardware/display/RefreshRateConfig;" \
+            "" \
+            "$TARGET_LCD_CONFIG_SEAMLESS_BRT"
+        SMALI_PATCH "system" "system/framework/framework.jar" \
+            "smali_classes6/com/samsung/android/hardware/display/RefreshRateConfig.smali" "replace" \
+            "getMainInstance()Lcom/samsung/android/hardware/display/RefreshRateConfig;" \
+            'invoke-direct {v0, v3, v3, v1, v2}, Lcom/samsung/android/hardware/display/RefreshRateConfig$BrightnessThreshold;-><init>(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V' \
+            "    const-string v4, \"$TARGET_LCD_CONFIG_SEAMLESS_LUX\"
+    invoke-direct {v0, v3, v4, v1, v2}, Lcom/samsung/android/hardware/display/RefreshRateConfig\$BrightnessThreshold;-><init>(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V"
+        SMALI_PATCH "system" "system/framework/framework.jar" \
+            "smali_classes6/com/samsung/android/hardware/display/RefreshRateConfig.smali" "replace" \
+            "getMainInstance()Lcom/samsung/android/hardware/display/RefreshRateConfig;" \
+            'invoke-static {v1, v2, v3, v0}, Lcom/samsung/android/hardware/display/RefreshRateConfig;->createRefreshRateConfig(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/samsung/android/hardware/display/RefreshRateConfig$BrightnessThreshold;)Lcom/samsung/android/hardware/display/RefreshRateConfig;' \
+            "    const-string v3, \"\"
+    invoke-static {v1, v2, v3, v0}, Lcom/samsung/android/hardware/display/RefreshRateConfig;->createRefreshRateConfig(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/samsung/android/hardware/display/RefreshRateConfig\$BrightnessThreshold;)Lcom/samsung/android/hardware/display/RefreshRateConfig;"
     else
         #* TODO handle these conditions
-        LOG_MISSING_PATCHES "SOURCE_LCD_CONFIG_SEAMLESS_BRT" "TARGET_LCD_CONFIG_SEAMLESS_BRT" || true
-        LOG_MISSING_PATCHES "SOURCE_LCD_CONFIG_SEAMLESS_LUX" "TARGET_LCD_CONFIG_SEAMLESS_LUX"
-    fi
-    else
-        # TODO handle these conditions
         LOG_MISSING_PATCHES "SOURCE_LCD_CONFIG_SEAMLESS_BRT" "TARGET_LCD_CONFIG_SEAMLESS_BRT" || true
         LOG_MISSING_PATCHES "SOURCE_LCD_CONFIG_SEAMLESS_LUX" "TARGET_LCD_CONFIG_SEAMLESS_LUX"
     fi
