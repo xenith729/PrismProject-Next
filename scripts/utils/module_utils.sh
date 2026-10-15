@@ -85,12 +85,12 @@ GET_GALAXY_STORE_DOWNLOAD_URL()
     SYSTEMID="$(date "+%s")"
 
     if [ ! "$OS" ]; then
-        # Android 16으로 대체
-        OS="36"
+        # Android 17으로 대체
+        OS="37"
     fi
     if [ ! "$ONEUI" ]; then
-        # One UI 8.0으로 대체
-        ONEUI="80000"
+        # One UI 9.0으로 대체
+        ONEUI="90000"
     fi
 
     PROTOCOL+="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>"
