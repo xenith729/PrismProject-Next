@@ -156,14 +156,14 @@ export TMP_DIR="$OUT_DIR/target/$SELECTED_TARGET/tmp"
 
 mkdir -p "$OUT_DIR/target/$SELECTED_TARGET"
 # shellcheck disable=SC2046
-[ -f "$OUT_DIR/config.sh" ] && unset $(sed "/Automatically/d" "$OUT_DIR/config.sh" | cut -d "=" -f 1)
+[ -f "$OUT_DIR/config.sh" ] && unset $(grep -v '^#' "$OUT_DIR/config.sh" | grep '=' | cut -d "=" -f 1)
 "$SRC_DIR/scripts/internal/gen_config_file.sh" "$SELECTED_TARGET" || return 1
 set -o allexport; source "$OUT_DIR/config.sh"; set +o allexport
 
 unset TARGETS SELECTED_TARGET
 
 echo "=============================="
-sed "/Automatically/d" "$OUT_DIR/config.sh"
+grep -v '^#' "$OUT_DIR/config.sh"
 echo "=============================="
 
 return 0
