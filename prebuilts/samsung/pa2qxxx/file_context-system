@@ -1,4 +1,7 @@
 /system u:object_r:system_file:s0
+/system/etc u:object_r:system_file:s0
+/system/etc/permissions u:object_r:system_file:s0
+/system/etc/permissions/signature-permissions-com\.samsung\.android\.game\.gamehome\.xml u:object_r:system_file:s0
 /system/saiv u:object_r:system_file:s0
 /system/saiv/image_understanding u:object_r:system_file:s0
 /system/saiv/image_understanding/db u:object_r:system_file:s0
