@@ -251,9 +251,9 @@ fi
 # VaultKeeper 지원 비활성화
 # 변경 전: [tbnz w8, #0, #0xXXXXXX]
 # 변경 후: [b #0xXXXXXX]
-LOG "- apex_payload/lib64/libbluetooth_jni.so에서 \"28f7773948050037\"을(를) \"28f777392a000014\"(으)로 패치 중"
+LOG "- apex_payload/lib64/libbluetooth_jni.so에서 \"56523948050037330080\"을(를) \"5652392a000014330080\"(으)로 패치 중"
 HEX_PATCH "$TMP_DIR/unknown/apex_payload/lib64/libbluetooth_jni.so" \
-    "28f7773948050037" "28f777392a000014" > /dev/null
+    "56523948050037330080" "5652392a000014330080" > /dev/null
 
 BUILD_APK_IN_APEX "$BLUETOOTH_APK"
 BUILD_APK_IN_APEX "$TMP_DIR/unknown/apex_payload/javalib/framework-bluetooth.jar"
