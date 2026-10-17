@@ -1,314 +1,294 @@
-SET_PROP_IF_DIFF "vendor" "ro.security.fips.ux" "Disabled"
-
-if [[ "$TARGET_OS_SINGLE_SYSTEM_IMAGE" == "qssi" ]]; then
-    DONOR="a73xqxx"
-elif [[ "$TARGET_OS_SINGLE_SYSTEM_IMAGE" == "essi" ]]; then
-    DONOR="a54xnsxx"
+# Fix SDHMS crash loop: siop_default.xml references OverheatComplexType.DEX which doesn't exist in the enum
+DECODE_APK "system" "system/priv-app/SamsungDeviceHealthManagerService/SamsungDeviceHealthManagerService.apk" || return 1
+_SDHMS_XML="$APKTOOL_DIR/system/priv-app/SamsungDeviceHealthManagerService/SamsungDeviceHealthManagerService.apk/assets/siop_default.xml"
+if grep -q '<DEX ' "$_SDHMS_XML" 2>/dev/null; then
+    LOG "- Removing unsupported DEX overheat complex type from SDHMS siop_default.xml"
+    sed -i '/<DEX /d' "$_SDHMS_XML"
 else
-    ABORT "알 수 없는 시스템 이미지 유형입니다: $TARGET_OS_SINGLE_SYSTEM_IMAGE"
+    LOG "- siop_default.xml: DEX entry not found (already removed or not present)"
 fi
+unset _SDHMS_XML
 
-DELETE_FROM_WORK_DIR "system" "system/app/BlockchainBasicKit"
-ADD_TO_WORK_DIR "$DONOR" "system" "system/bin/installd" 0 2000 755 "u:object_r:installd_exec:s0"
-ADD_TO_WORK_DIR "$DONOR" "system" "system/bin/vdc" 0 2000 755 "u:object_r:vdc_exec:s0"
-ADD_TO_WORK_DIR "$DONOR" "system" "system/bin/vold" 0 2000 755 "u:object_r:vold_exec:s0"
-# 구형 sdFAT 커널 드라이버 지원 (pre-API 35)
-# unica/patches/legacy/customize.sh에서 추가 정보를 확인하세요.
-if [ "$TARGET_PLATFORM_SDK_VERSION" -lt "35" ] && \
-        grep -q "SDFAT" "$WORK_DIR/kernel/boot.img" && \
-        ! grep -q "bogus directory:" "$WORK_DIR/kernel/boot.img"; then
-    LOG_STEP_IN
-    # ",time_offset=%d" -> "NUL"
-    HEX_PATCH "$WORK_DIR/system/system/bin/vold" "2c74696d655f6f66667365743d2564" "000000000000000000000000000000"
-    LOG_STEP_OUT
-fi
-DELETE_FROM_WORK_DIR "system" "system/bin/dualdard"
-DELETE_FROM_WORK_DIR "system" "system/bin/sdp_cryptod"
-DELETE_FROM_WORK_DIR "system" "system/etc/init/dualdard.rc"
-DELETE_FROM_WORK_DIR "system" "system/etc/init/kpp.init.rc"
-DELETE_FROM_WORK_DIR "system" "system/etc/init/kss.init.rc"
-DELETE_FROM_WORK_DIR "system" "system/etc/init/sdp_cryptod.rc"
-DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.hdmapp.xml"
-DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.kgclient.xml"
-DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.knox.kfbp.xml"
-DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.knox.knnr.xml"
-DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.knox.mpos.xml"
-DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.knox.pushmanager.xml"
-DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.knox.sandbox.xml"
-DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.knox.zt.framework.xml"
-DELETE_FROM_WORK_DIR "system" "system/etc/permissions/signature-permissions-com.samsung.android.kgclient.xml"
-DELETE_FROM_WORK_DIR "system" "system/etc/sysconfig/preinstalled-packages-com.samsung.android.coldwalletservice.xml"
-DELETE_FROM_WORK_DIR "system" "system/lib/android.hardware.weaver@1.0.so"
-DELETE_FROM_WORK_DIR "system" "system/lib/hidl_comm_ddar_client.so"
-ADD_TO_WORK_DIR "$DONOR" "system" "system/lib/libandroid_servers.so" 0 0 644 "u:object_r:system_lib_file:s0"
-DELETE_FROM_WORK_DIR "system" "system/lib/libdualdar.so"
-DELETE_FROM_WORK_DIR "system" "system/lib/libepm.so"
-DELETE_FROM_WORK_DIR "system" "system/lib/libhermes_cred.so"
-DELETE_FROM_WORK_DIR "system" "system/lib/libkeyutils.so"
-DELETE_FROM_WORK_DIR "system" "system/lib/libknox_filemanager.so"
-ADD_TO_WORK_DIR "$DONOR" "system" "system/lib/libmdf.so" 0 0 644 "u:object_r:system_lib_file:s0"
-DELETE_FROM_WORK_DIR "system" "system/lib/libmdfpp_req.so"
-DELETE_FROM_WORK_DIR "system" "system/lib/libpersona.so"
-DELETE_FROM_WORK_DIR "system" "system/lib/libsdp_crypto.so"
-DELETE_FROM_WORK_DIR "system" "system/lib/libsdp_kekm.so"
-DELETE_FROM_WORK_DIR "system" "system/lib/libsdp_sdk.so"
-ADD_TO_WORK_DIR "$DONOR" "system" "system/lib/libsqlite.so" 0 0 644 "u:object_r:system_lib_file:s0"
-DELETE_FROM_WORK_DIR "system" "system/lib/vendor.samsung.hardware.tlc.ddar@1.0.so"
-DELETE_FROM_WORK_DIR "system" "system/lib64/android.hardware.weaver@1.0.so"
-DELETE_FROM_WORK_DIR "system" "system/lib64/hidl_comm_ddar_client.so"
-ADD_TO_WORK_DIR "$DONOR" "system" "system/lib64/libandroid_servers.so" 0 0 644 "u:object_r:system_lib_file:s0"
-DELETE_FROM_WORK_DIR "system" "system/lib64/libdualdar.so"
-ADD_TO_WORK_DIR "$DONOR" "system" "system/lib64/libepm.so" 0 0 644 "u:object_r:system_lib_file:s0"
-ADD_TO_WORK_DIR "$DONOR" "system" "system/lib64/libmdf.so" 0 0 644 "u:object_r:system_lib_file:s0"
-DELETE_FROM_WORK_DIR "system" "system/lib64/libmdfpp_req.so"
-DELETE_FROM_WORK_DIR "system" "system/lib64/libsdp_crypto.so"
-DELETE_FROM_WORK_DIR "system" "system/lib64/libsdp_kekm.so"
-DELETE_FROM_WORK_DIR "system" "system/lib64/libsdp_sdk.so"
-ADD_TO_WORK_DIR "$DONOR" "system" "system/lib64/libsqlite.so" 0 0 644 "u:object_r:system_lib_file:s0"
-DELETE_FROM_WORK_DIR "system" "system/lib64/vendor.samsung.hardware.tlc.ddar@1.0.so"
-DELETE_FROM_WORK_DIR "system" "system/priv-app/HdmApk"
-DELETE_FROM_WORK_DIR "system" "system/priv-app/KnoxFrameBufferProvider"
+# Nuke Knox HDM version (HdmManager method body differs in t2s vs S26U)
+DECODE_APK "system" "system/priv-app/SecSettings/SecSettings.apk" || return 1
+_HDM_SMALI="$APKTOOL_DIR/system/priv-app/SecSettings/SecSettings.apk/smali_classes3/com/samsung/android/knox/hdm/HdmManager.smali"
+LOG "- Nuking getHdmVersion() in /system/system/priv-app/SecSettings/SecSettings.apk/HdmManager.smali"
+python3 - "$_HDM_SMALI" << 'PYEOF'
+import sys, re
+path = sys.argv[1]
+with open(path) as f:
+    content = f.read()
+old = re.search(
+    r'(\.method public static getHdmVersion\(\)Ljava/lang/String;\n    \.locals \d+\n\n'
+    r'    sget-object v0, Lcom/samsung/android/knox/hdm/HdmManager;->TAG:Ljava/lang/String;\n\n'
+    r'    const-string v1, "getHdmVersion\(\) on HdmManager\.java"\n\n'
+    r'    invoke-static \{v0, v1\}, Landroid/util/Log;->d\(Ljava/lang/String;Ljava/lang/String;\)I\n)'
+    r'.*?(\n    return-object v0\n\.end method)',
+    content, re.DOTALL
+)
+if not old:
+    print('WARNING: getHdmVersion pattern not found', file=sys.stderr)
+    sys.exit(1)
+new_body = (old.group(1) +
+    '\n    const/4 v0, 0x0' +
+    old.group(2))
+content = content[:old.start()] + new_body + content[old.end():]
+content = re.sub(
+    r'(\.method public static getHdmVersion\(\)Ljava/lang/String;\n    )\.locals \d+',
+    r'\1.locals 2',
+    content, count=1
+)
+with open(path, 'w') as f:
+    f.write(content)
+PYEOF
+[ $? -ne 0 ] && { LOG "\033[0;31m! ERROR: HdmManager getHdmVersion() fix failed\033[0m"; return 1; }
+unset _HDM_SMALI
+
+# Nuke Knox DualDAR and HDM version in SecSettingsIntelligence
+DECODE_APK "system" "system/priv-app/SecSettingsIntelligence/SecSettingsIntelligence.apk" || return 1
+_SSI_DIR="$APKTOOL_DIR/system/priv-app/SecSettingsIntelligence/SecSettingsIntelligence.apk"
+LOG "- Nuking getDualDARVersion() in /system/system/priv-app/SecSettingsIntelligence/SecSettingsIntelligence.apk"
+python3 - "$_SSI_DIR/smali_classes2/com/samsung/android/knox/ddar/DualDARPolicy.smali" << 'PYEOF'
+import sys
+path = sys.argv[1]
+with open(path) as f:
+    content = f.read()
+old = '    const-string v0, "1.9.0"\n\n    return-object v0\n.end method'
+new = '    const/4 v0, 0x0\n\n    return-object v0\n.end method'
+if old not in content:
+    print('WARNING: DualDARPolicy getDualDARVersion pattern not found', file=sys.stderr)
+    sys.exit(1)
+with open(path, 'w') as f:
+    f.write(content.replace(old, new, 1))
+PYEOF
+[ $? -ne 0 ] && { LOG "\033[0;31m! ERROR: SecSettingsIntelligence DualDARPolicy fix failed\033[0m"; return 1; }
+
+LOG "- Nuking getHdmVersion() in /system/system/priv-app/SecSettingsIntelligence/SecSettingsIntelligence.apk"
+python3 - "$_SSI_DIR/smali_classes2/com/samsung/android/knox/hdm/HdmManager.smali" << 'PYEOF'
+import sys, re
+path = sys.argv[1]
+with open(path) as f:
+    content = f.read()
+old = re.search(
+    r'(\.method public static getHdmVersion\(\)Ljava/lang/String;\n    \.locals \d+\n\n'
+    r'    sget-object v0, Lcom/samsung/android/knox/hdm/HdmManager;->TAG:Ljava/lang/String;\n\n'
+    r'    const-string v1, "getHdmVersion\(\) on HdmManager\.java"\n\n'
+    r'    invoke-static \{v0, v1\}, Landroid/util/Log;->d\(Ljava/lang/String;Ljava/lang/String;\)I\n)'
+    r'.*?(\n    return-object v0\n\.end method)',
+    content, re.DOTALL
+)
+if not old:
+    print('WARNING: getHdmVersion pattern not found', file=sys.stderr)
+    sys.exit(1)
+new_body = (old.group(1) +
+    '\n    const/4 v0, 0x0' +
+    old.group(2))
+content = content[:old.start()] + new_body + content[old.end():]
+content = re.sub(
+    r'(\.method public static getHdmVersion\(\)Ljava/lang/String;\n    )\.locals \d+',
+    r'\1.locals 2',
+    content, count=1
+)
+with open(path, 'w') as f:
+    f.write(content)
+PYEOF
+[ $? -ne 0 ] && { LOG "\033[0;31m! ERROR: SecSettingsIntelligence HdmManager fix failed\033[0m"; return 1; }
+unset _SSI_DIR
+
+# Nuke Knox DualDAR and HDM version in knoxsdk.jar
+DECODE_APK "system" "system/framework/knoxsdk.jar" || return 1
+_KNOX_DIR="$APKTOOL_DIR/system/framework/knoxsdk.jar"
+LOG "- Nuking getDualDARVersion() in /system/system/framework/knoxsdk.jar"
+python3 - "$_KNOX_DIR/smali/com/samsung/android/knox/ddar/DualDARPolicy.smali" << 'PYEOF'
+import sys
+path = sys.argv[1]
+with open(path) as f:
+    content = f.read()
+old = '    const-string v0, "1.9.0"\n\n    return-object v0\n.end method'
+new = '    const/4 v0, 0x0\n\n    return-object v0\n.end method'
+if old not in content:
+    print('WARNING: knoxsdk DualDARPolicy getDualDARVersion pattern not found', file=sys.stderr)
+    sys.exit(1)
+with open(path, 'w') as f:
+    f.write(content.replace(old, new, 1))
+PYEOF
+[ $? -ne 0 ] && { LOG "\033[0;31m! ERROR: knoxsdk DualDARPolicy fix failed\033[0m"; return 1; }
+
+LOG "- Nuking getHdmVersion() in /system/system/framework/knoxsdk.jar"
+python3 - "$_KNOX_DIR/smali/com/samsung/android/knox/hdm/HdmManager.smali" << 'PYEOF'
+import sys, re
+path = sys.argv[1]
+with open(path) as f:
+    content = f.read()
+old = re.search(
+    r'(\.method public static greylist getHdmVersion\(\)Ljava/lang/String;\n    \.locals \d+\n\n'
+    r'    sget-object v0, Lcom/samsung/android/knox/hdm/HdmManager;->TAG:Ljava/lang/String;\n\n'
+    r'    const-string v1, "getHdmVersion\(\) on HdmManager\.java"\n\n'
+    r'    invoke-static \{v0, v1\}, Landroid/util/Log;->d\(Ljava/lang/String;Ljava/lang/String;\)I\n)'
+    r'.*?(\n    return-object v0\n\.end method)',
+    content, re.DOTALL
+)
+if not old:
+    print('WARNING: knoxsdk getHdmVersion pattern not found', file=sys.stderr)
+    sys.exit(1)
+new_body = (old.group(1) +
+    '\n    const/4 v0, 0x0' +
+    old.group(2))
+content = content[:old.start()] + new_body + content[old.end():]
+content = re.sub(
+    r'(\.method public static greylist getHdmVersion\(\)Ljava/lang/String;\n    )\.locals \d+',
+    r'\1.locals 2',
+    content, count=1
+)
+with open(path, 'w') as f:
+    f.write(content)
+PYEOF
+[ $? -ne 0 ] && { LOG "\033[0;31m! ERROR: knoxsdk HdmManager fix failed\033[0m"; return 1; }
+unset _KNOX_DIR
+
+# Nuke Knox DualDAR and HDM version in StorageManager
+DECODE_APK "system_ext" "priv-app/StorageManager/StorageManager.apk" || return 1
+_SM_DIR="$APKTOOL_DIR/system_ext/priv-app/StorageManager/StorageManager.apk"
+LOG "- Nuking getDualDARVersion() in /system_ext/priv-app/StorageManager/StorageManager.apk"
+python3 - "$_SM_DIR/smali/com/samsung/android/knox/ddar/DualDARPolicy.smali" << 'PYEOF'
+import sys
+path = sys.argv[1]
+with open(path) as f:
+    content = f.read()
+old = '    const-string v0, "1.9.0"\n\n    return-object v0\n.end method'
+new = '    const/4 v0, 0x0\n\n    return-object v0\n.end method'
+if old not in content:
+    print('WARNING: StorageManager DualDARPolicy getDualDARVersion pattern not found', file=sys.stderr)
+    sys.exit(1)
+with open(path, 'w') as f:
+    f.write(content.replace(old, new, 1))
+PYEOF
+[ $? -ne 0 ] && { LOG "\033[0;31m! ERROR: StorageManager DualDARPolicy fix failed\033[0m"; return 1; }
+
+LOG "- Nuking getHdmVersion() in /system_ext/priv-app/StorageManager/StorageManager.apk"
+python3 - "$_SM_DIR/smali/com/samsung/android/knox/hdm/HdmManager.smali" << 'PYEOF'
+import sys, re
+path = sys.argv[1]
+with open(path) as f:
+    content = f.read()
+old = re.search(
+    r'(\.method public static getHdmVersion\(\)Ljava/lang/String;\n    \.locals \d+\n\n'
+    r'    sget-object v0, Lcom/samsung/android/knox/hdm/HdmManager;->TAG:Ljava/lang/String;\n\n'
+    r'    const-string v1, "getHdmVersion\(\) on HdmManager\.java"\n\n'
+    r'    invoke-static \{v0, v1\}, Landroid/util/Log;->d\(Ljava/lang/String;Ljava/lang/String;\)I\n)'
+    r'.*?(\n    return-object v0\n\.end method)',
+    content, re.DOTALL
+)
+if not old:
+    print('WARNING: StorageManager getHdmVersion pattern not found', file=sys.stderr)
+    sys.exit(1)
+new_body = (old.group(1) +
+    '\n    const/4 v0, 0x0' +
+    old.group(2))
+content = content[:old.start()] + new_body + content[old.end():]
+content = re.sub(
+    r'(\.method public static getHdmVersion\(\)Ljava/lang/String;\n    )\.locals \d+',
+    r'\1.locals 2',
+    content, count=1
+)
+with open(path, 'w') as f:
+    f.write(content)
+PYEOF
+[ $? -ne 0 ] && { LOG "\033[0;31m! ERROR: StorageManager HdmManager fix failed\033[0m"; return 1; }
+unset _SM_DIR
+
+# KnoxGuard
 DELETE_FROM_WORK_DIR "system" "system/priv-app/KnoxGuard"
+DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.kgclient.xml"
+
+# DualDAR
+DELETE_FROM_WORK_DIR "system" "system/bin/dualdard"
+DELETE_FROM_WORK_DIR "system" "system/etc/init/dualdard.rc"
+# DELETE_FROM_WORK_DIR "system" "system/lib64/libdualdar.so"
+# DELETE_FROM_WORK_DIR "system" "system/lib64/aidl_comm_ddar_client.so"
+# DELETE_FROM_WORK_DIR "system" "system/lib64/vendor.samsung.hardware.tlc.ddar-V1-ndk.so"
+
+# Blockchain
+DELETE_FROM_WORK_DIR "system" "system/app/BlockchainBasicKit"
+DELETE_FROM_WORK_DIR "system" "system/framework/service-samsung-blockchain.jar"
+DELETE_FROM_WORK_DIR "system" "system/etc/sysconfig/preinstalled-packages-com.samsung.android.coldwalletservice.xml"
+# DELETE_FROM_WORK_DIR "system" "system/lib64/libtlc_blockchain_comm.so"
+# DELETE_FROM_WORK_DIR "system" "system/lib64/libtlc_blockchain_keystore.so"
+# DELETE_FROM_WORK_DIR "system" "system/lib64/libtlc_blockchain_direct_comm.so"
+# DELETE_FROM_WORK_DIR "system" "system/lib64/vendor.samsung.hardware.tlc.blockchain@1.0.so"
+SET_FLOATING_FEATURE_CONFIG "SEC_FLOATING_FEATURE_FRAMEWORK_SUPPORT_BLOCKCHAIN_SERVICE" --delete
+
+# Payment
+# DELETE_FROM_WORK_DIR "system" "system/lib64/libtlc_payment_direct_comm.so"
+# DELETE_FROM_WORK_DIR "system" "system/lib64/libtlc_payment_spay.so"
+# DELETE_FROM_WORK_DIR "system" "system/lib64/libtlc_payment_comm.so"
+# DELETE_FROM_WORK_DIR "system" "system/lib64/vendor.samsung.hardware.tlc.payment@1.0.so"
+
+# MPOS
+DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.knox.mpos.xml"
+# DELETE_FROM_WORK_DIR "system" "system/lib64/libhidl_comm_mpos_tui_client.so"
+# DELETE_FROM_WORK_DIR "system" "system/lib64/vendor.samsung.hardware.mpos-V1-ndk.so"
+# DELETE_FROM_WORK_DIR "system" "system/lib64/vendor.samsung.hardware.tlc.mpos_tui@1.0.so"
 DELETE_FROM_WORK_DIR "system" "system/priv-app/KnoxMposAgent"
+
+# eSE COS
+DELETE_FROM_WORK_DIR "system" "system/bin/sem_daemon"
+DELETE_FROM_WORK_DIR "system" "system/etc/init/sem_early.rc"
+DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.sem.factoryapp.xml"
+DELETE_FROM_WORK_DIR "system" "system/lib64/libsec_sem.so"
+DELETE_FROM_WORK_DIR "system" "system/lib64/libsec_semAidl.so"
+# DELETE_FROM_WORK_DIR "system" "system/lib64/libsec_semRil.so"
+DELETE_FROM_WORK_DIR "system" "system/lib64/libsec_semTlc.so"
+# DELETE_FROM_WORK_DIR "system" "system/lib64/libspictrl.so"
+DELETE_FROM_WORK_DIR "system" "system/lib64/vendor.samsung.hardware.security.sem-V1-ndk.so"
+DELETE_FROM_WORK_DIR "system" "system/priv-app/SEMFactoryApp"
+
+# Weaver
+# DELETE_FROM_WORK_DIR "system" "system/lib64/libhermes_cred.so"
+# DELETE_FROM_WORK_DIR "system" "system/lib64/android.hardware.weaver-V2-ndk.so"
+
+# HDM
+DELETE_FROM_WORK_DIR "system" "system/priv-app/HdmApk"
+DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.hdmapp.xml"
+
+# WSM
+DELETE_FROM_WORK_DIR "system" "system/etc/public.libraries-wsm.samsung.txt"
+DELETE_FROM_WORK_DIR "system" "system/lib64/libhal.wsm.samsung.so"
+DELETE_FROM_WORK_DIR "system" "system/lib64/vendor.samsung.hardware.security.wsm.service-V1-ndk.so"
+
+# Knox ZeroTrust
+DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.knox.zt.framework.xml"
+DELETE_FROM_WORK_DIR "system" "system/priv-app/KnoxZtFramework"
+
+# Knox Matrix
+DELETE_FROM_WORK_DIR "system" "system/bin/fabric_crypto"
+DELETE_FROM_WORK_DIR "system" "system/etc/init/fabric_crypto.rc"
+DELETE_FROM_WORK_DIR "system" "system/etc/permissions/FabricCryptoLib.xml"
+DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.kmxservice.xml"
+DELETE_FROM_WORK_DIR "system" "system/etc/vintf/manifest/fabric_crypto_manifest.xml"
+DELETE_FROM_WORK_DIR "system" "system/framework/FabricCryptoLib.jar"
+DELETE_FROM_WORK_DIR "system" "system/lib64/com.samsung.security.fabric.cryptod-V1-cpp.so"
+DELETE_FROM_WORK_DIR "system" "system/lib64/vendor.samsung.hardware.security.fkeymaster-V1-cpp.so"
+DELETE_FROM_WORK_DIR "system" "system/lib64/vendor.samsung.hardware.security.fkeymaster-V1-ndk.so"
+DELETE_FROM_WORK_DIR "system" "system/priv-app/KmxService"
+
+# Other Knox APKs
+DELETE_FROM_WORK_DIR "system" "system/priv-app/KPECore"
+DELETE_FROM_WORK_DIR "system" "system/priv-app/KnoxCore"
+DELETE_FROM_WORK_DIR "system" "system/priv-app/KnoxERAgent"
+DELETE_FROM_WORK_DIR "system" "system/priv-app/KnoxFrameBufferProvider"
+DELETE_FROM_WORK_DIR "system" "system/priv-app/KnoxNetworkFilter"
 DELETE_FROM_WORK_DIR "system" "system/priv-app/KnoxNeuralNetworkRuntime"
 DELETE_FROM_WORK_DIR "system" "system/priv-app/KnoxPushManager"
 DELETE_FROM_WORK_DIR "system" "system/priv-app/KnoxSandbox"
-DELETE_FROM_WORK_DIR "system" "system/priv-app/KnoxZtFramework"
-
-if [[ "$TARGET_OS_SINGLE_SYSTEM_IMAGE" == "qssi" ]]; then
-    ADD_TO_WORK_DIR "$DONOR" "system" "system/bin/apexd" 0 2000 755 "u:object_r:apexd_exec:s0"
-    ADD_TO_WORK_DIR "$DONOR" "system" "system/bin/gsid" 0 2000 755 "u:object_r:gsid_exec:s0"
-    ADD_TO_WORK_DIR "$DONOR" "system" "system/lib/service.incremental.so" 0 0 644 "u:object_r:system_lib_file:s0"
-    ADD_TO_WORK_DIR "$DONOR" "system" "system/lib64/service.incremental.so" 0 0 644 "u:object_r:system_lib_file:s0"
-fi
-
-if [[ "$TARGET_OS_SINGLE_SYSTEM_IMAGE" == "qssi" ]]; then
-    APPLY_PATCH "system" "system/framework/framework.jar" \
-        "$MODPATH/vold/framework.jar/0001-Add-token-argument-in-unlockCeStorage.patch"
-    APPLY_PATCH "system" "system/framework/services.jar" \
-        "$MODPATH/vold/services.jar/0001-Add-token-argument-in-unlockCeStorage.patch"
-fi
-
-unset DONOR
-
-DECODE_APK "system" "system/framework/services.jar"
-SOURCE_FILE_ATTR="$(grep -F ".source" "$APKTOOL_DIR/system/framework/services.jar/smali/android/gsi/GsiProgress.smali")"
-SOURCE_FILE_ATTR="${SOURCE_FILE_ATTR//\./\\\.}"
-SOURCE_FILE_ATTR="${SOURCE_FILE_ATTR//\"/\\\"}"
-SOURCE_FILE_ATTR="${SOURCE_FILE_ATTR//\//\\\/}"
-LOG "- /system/system/framework/services.jar에서 SourceFile 속성 교체 중..."
-find "$APKTOOL_DIR/system/framework/services.jar" -type f -name "*.smali" -print0 \
-    | xargs -0 -I "{}" -P "$(nproc)" sed -i "s/^\.source.*/\.source \"SourceFile\"/g" "{}"
-if [[ "$SOURCE_PRODUCT_SHIPPING_API_LEVEL" != "$TARGET_PRODUCT_SHIPPING_API_LEVEL" ]]; then
-    SMALI_PATCH "system" "system/framework/services.jar" \
-        "smali/com/android/server/knox/dar/ddar/ta/TAProxy.smali" "replace" \
-        "updateServiceHolder(Z)V" \
-        "$TARGET_PRODUCT_SHIPPING_API_LEVEL" \
-        "$SOURCE_PRODUCT_SHIPPING_API_LEVEL" \
-        > /dev/null
-fi
-
-# SEC_PRODUCT_FEATURE_KNOX_SUPPORT_SDP
-APPLY_PATCH "system" "system/framework/framework.jar" \
-    "$MODPATH/sdp/framework.jar/0001-Nuke-Knox-SDP.patch"
-APPLY_PATCH "system" "system/framework/services.jar" \
-    "$MODPATH/sdp/services.jar/0001-Nuke-Knox-SDP.patch"
-
-# SEC_PRODUCT_FEATURE_KNOX_SUPPORT_DUAL_DAR
-APPLY_PATCH "system" "system/framework/framework.jar" \
-    "$MODPATH/ddar/framework.jar/0001-Nuke-Knox-DualDAR.patch"
-APPLY_PATCH "system" "system/framework/framework.jar" \
-    "$MODPATH/ddar/framework.jar/0002-Nuke-MDF.patch"
-APPLY_PATCH "system" "system/framework/knoxsdk.jar" \
-    "$MODPATH/ddar/knoxsdk.jar/0001-Nuke-Knox-DualDAR.patch"
-APPLY_PATCH "system" "system/framework/services.jar" \
-    "$MODPATH/ddar/services.jar/0001-Nuke-Knox-DualDAR.patch"
-APPLY_PATCH "system" "system/priv-app/DeviceDiagnostics/DeviceDiagnostics.apk" \
-    "$MODPATH/ddar/DeviceDiagnostics.apk/0001-Nuke-Knox-DualDAR.patch"
-APPLY_PATCH "system" "system/priv-app/KnoxCore/KnoxCore.apk" \
-    "$MODPATH/ddar/KnoxCore.apk/0001-Nuke-Knox-DualDAR.patch"
-APPLY_PATCH "system" "system/priv-app/ManagedProvisioning/ManagedProvisioning.apk" \
-    "$MODPATH/ddar/ManagedProvisioning.apk/0001-Nuke-Knox-DualDAR.patch"
-APPLY_PATCH "system" "system/priv-app/SecSettings/SecSettings.apk" \
-    "$MODPATH/ddar/SecSettings.apk/0001-Nuke-Knox-DualDAR.patch"
-APPLY_PATCH "system" "system/priv-app/SecSettingsIntelligence/SecSettingsIntelligence.apk" \
-    "$MODPATH/ddar/SecSettingsIntelligence.apk/0001-Nuke-Knox-DualDAR.patch"
-APPLY_PATCH "system_ext" "priv-app/StorageManager/StorageManager.apk" \
-    "$MODPATH/ddar/StorageManager.apk/0001-Nuke-Knox-DualDAR.patch"
-
-# SEC_PRODUCT_FEATURE_KNOX_SUPPORT_HDM
-DECODE_APK "system" "system/framework/knoxsdk.jar"
-
-HDM_VERSION="$(grep "const.* - .*\\w\"" "$APKTOOL_DIR/system/framework/knoxsdk.jar/smali/com/samsung/android/knox/hdm/HdmManager.smali" | tr -d "\"" | awk '{print $3}' -)"
-HDM_POLICY_TYPE="$(grep "const.* - .*\\w\"" "$APKTOOL_DIR/system/framework/knoxsdk.jar/smali/com/samsung/android/knox/hdm/HdmManager.smali" | tr -d "\"" | awk '{print $5}' -)"
-
-SMALI_PATCH "system" "system/framework/knoxsdk.jar" \
-    "smali/com/samsung/android/knox/hdm/HdmManager.smali" "replaceall" \
-    "$HDM_VERSION" \
-    "HDM_VERSION" \
-    > /dev/null
-SMALI_PATCH "system" "system/framework/knoxsdk.jar" \
-    "smali/com/samsung/android/knox/hdm/HdmManager.smali" "replaceall" \
-    "$HDM_POLICY_TYPE" \
-    "HDM_POLICY_TYPE" \
-    > /dev/null
-APPLY_PATCH "system" "system/framework/knoxsdk.jar" \
-    "$MODPATH/hdm/knoxsdk.jar/0001-Nuke-Knox-HDM.patch"
-if [[ "$SOURCE_PRODUCT_SHIPPING_API_LEVEL" != "$TARGET_PRODUCT_SHIPPING_API_LEVEL" ]]; then
-    SMALI_PATCH "system" "system/framework/services.jar" \
-        "smali/com/android/server/enterprise/hdm/HdmSakManager.smali" "replace" \
-        "isSupported(Landroid/content/Context;)Z" \
-        "$TARGET_PRODUCT_SHIPPING_API_LEVEL" \
-        "$SOURCE_PRODUCT_SHIPPING_API_LEVEL" \
-        > /dev/null
-    SMALI_PATCH "system" "system/framework/services.jar" \
-        "smali/com/android/server/enterprise/hdm/HdmVendorController.smali" "replace" \
-        "<init>()V" \
-        "$TARGET_PRODUCT_SHIPPING_API_LEVEL" \
-        "$SOURCE_PRODUCT_SHIPPING_API_LEVEL" \
-        > /dev/null
-fi
-# TODO nuke HdmVendorController.smali
-APPLY_PATCH "system" "system/framework/services.jar" \
-    "$MODPATH/hdm/services.jar/0001-Nuke-Knox-HDM.patch"
-SMALI_PATCH "system" "system/priv-app/DeviceDiagnostics/DeviceDiagnostics.apk" \
-    "smali/com/samsung/android/knox/hdm/HdmManager.smali" "replaceall" \
-    "$HDM_VERSION" \
-    "HDM_VERSION" \
-    > /dev/null
-SMALI_PATCH "system" "system/priv-app/DeviceDiagnostics/DeviceDiagnostics.apk" \
-    "smali/com/samsung/android/knox/hdm/HdmManager.smali" "replaceall" \
-    "$HDM_POLICY_TYPE" \
-    "HDM_POLICY_TYPE" \
-    > /dev/null
-APPLY_PATCH "system" "system/priv-app/DeviceDiagnostics/DeviceDiagnostics.apk" \
-    "$MODPATH/hdm/DeviceDiagnostics.apk/0001-Nuke-Knox-HDM.patch"
-SMALI_PATCH "system" "system/priv-app/ManagedProvisioning/ManagedProvisioning.apk" \
-    "smali/com/samsung/android/knox/hdm/HdmManager.smali" "replaceall" \
-    "$HDM_VERSION" \
-    "HDM_VERSION" \
-    > /dev/null
-SMALI_PATCH "system" "system/priv-app/ManagedProvisioning/ManagedProvisioning.apk" \
-    "smali/com/samsung/android/knox/hdm/HdmManager.smali" "replaceall" \
-    "$HDM_POLICY_TYPE" \
-    "HDM_POLICY_TYPE" \
-    > /dev/null
-APPLY_PATCH "system" "system/priv-app/ManagedProvisioning/ManagedProvisioning.apk" \
-    "$MODPATH/hdm/ManagedProvisioning.apk/0001-Nuke-Knox-HDM.patch"
-SMALI_PATCH "system" "system/priv-app/SecSettings/SecSettings.apk" \
-    "smali_classes4/com/samsung/android/knox/hdm/HdmManager.smali" "replaceall" \
-    "$HDM_VERSION" \
-    "HDM_VERSION" \
-    > /dev/null
-SMALI_PATCH "system" "system/priv-app/SecSettings/SecSettings.apk" \
-    "smali_classes4/com/samsung/android/knox/hdm/HdmManager.smali" "replaceall" \
-    "$HDM_POLICY_TYPE" \
-    "HDM_POLICY_TYPE" \
-    > /dev/null
-APPLY_PATCH "system" "system/priv-app/SecSettings/SecSettings.apk" \
-    "$MODPATH/hdm/SecSettings.apk/0001-Nuke-Knox-HDM.patch"
-SMALI_PATCH "system" "system/priv-app/SecSettingsIntelligence/SecSettingsIntelligence.apk" \
-    "smali_classes2/com/samsung/android/knox/hdm/HdmManager.smali" "replaceall" \
-    "$HDM_VERSION" \
-    "HDM_VERSION" \
-    > /dev/null
-SMALI_PATCH "system" "system/priv-app/SecSettingsIntelligence/SecSettingsIntelligence.apk" \
-    "smali_classes2/com/samsung/android/knox/hdm/HdmManager.smali" "replaceall" \
-    "$HDM_POLICY_TYPE" \
-    "HDM_POLICY_TYPE" \
-    > /dev/null
-APPLY_PATCH "system" "system/priv-app/SecSettingsIntelligence/SecSettingsIntelligence.apk" \
-    "$MODPATH/hdm/SecSettingsIntelligence.apk/0001-Nuke-Knox-HDM.patch"
-SMALI_PATCH "system_ext" "priv-app/StorageManager/StorageManager.apk" \
-    "smali/com/samsung/android/knox/hdm/HdmManager.smali" "replaceall" \
-    "$HDM_VERSION" \
-    "HDM_VERSION" \
-    > /dev/null
-SMALI_PATCH "system_ext" "priv-app/StorageManager/StorageManager.apk" \
-    "smali/com/samsung/android/knox/hdm/HdmManager.smali" "replaceall" \
-    "$HDM_POLICY_TYPE" \
-    "HDM_POLICY_TYPE" \
-    > /dev/null
-APPLY_PATCH "system_ext" "priv-app/StorageManager/StorageManager.apk" \
-    "$MODPATH/hdm/StorageManager.apk/0001-Nuke-Knox-HDM.patch"
-
-unset HDM_VERSION HDM_POLICY_TYPE
-
-# SEC_PRODUCT_FEATURE_KNOX_SUPPORT_BLDP
-SMALI_PATCH "system" "system/framework/knoxsdk.jar" \
-    "smali/com/samsung/android/knox/integrity/EnhancedAttestationPolicy.smali" "return" \
-    'isBldpEventSupported()Z' 'false'
-SMALI_PATCH "system" "system/priv-app/DeviceDiagnostics/DeviceDiagnostics.apk" \
-    "smali/com/samsung/android/knox/integrity/EnhancedAttestationPolicy.smali" "return" \
-    'isBldpEventSupported()Z' 'false'
-SMALI_PATCH "system" "system/priv-app/ManagedProvisioning/ManagedProvisioning.apk" \
-    "smali/com/samsung/android/knox/integrity/EnhancedAttestationPolicy.smali" "return" \
-    'isBldpEventSupported()Z' 'false'
-SMALI_PATCH "system" "system/priv-app/SecSettings/SecSettings.apk" \
-    "smali_classes4/com/samsung/android/knox/integrity/EnhancedAttestationPolicy.smali" "return" \
-    'isBldpEventSupported()Z' 'false'
-SMALI_PATCH "system" "system/priv-app/SecSettingsIntelligence/SecSettingsIntelligence.apk" \
-    "smali_classes2/com/samsung/android/knox/integrity/EnhancedAttestationPolicy.smali" "return" \
-    'isBldpEventSupported()Z' 'false'
-SMALI_PATCH "system_ext" "priv-app/StorageManager/StorageManager.apk" \
-    "smali/com/samsung/android/knox/integrity/EnhancedAttestationPolicy.smali" "return" \
-    'isBldpEventSupported()Z' 'false'
-SMALI_PATCH "system_ext" "priv-app/SystemUI/SystemUI.apk" \
-    "smali_classes4/com/samsung/android/knox/integrity/EnhancedAttestationPolicy.smali" "return" \
-    'isBldpEventSupported()Z' 'false'
-
-# SEC_PRODUCT_FEATURE_KNOX_SUPPORT_MPOS
-# TODO add services.jar patch
-SMALI_PATCH "system" "system/framework/knoxsdk.jar" \
-    "smali/com/samsung/android/knox/integrity/EnhancedAttestationPolicy.smali" "return" \
-    'isMposSupported()Z' 'false'
-SMALI_PATCH "system" "system/priv-app/DeviceDiagnostics/DeviceDiagnostics.apk" \
-    "smali/com/samsung/android/knox/integrity/EnhancedAttestationPolicy.smali" "return" \
-    'isMposSupported()Z' 'false'
-SMALI_PATCH "system" "system/priv-app/ManagedProvisioning/ManagedProvisioning.apk" \
-    "smali/com/samsung/android/knox/integrity/EnhancedAttestationPolicy.smali" "return" \
-    'isMposSupported()Z' 'false'
-SMALI_PATCH "system" "system/priv-app/SecSettings/SecSettings.apk" \
-    "smali_classes4/com/samsung/android/knox/integrity/EnhancedAttestationPolicy.smali" "return" \
-    'isMposSupported()Z' 'false'
-SMALI_PATCH "system" "system/priv-app/SecSettingsIntelligence/SecSettingsIntelligence.apk" \
-    "smali_classes2/com/samsung/android/knox/integrity/EnhancedAttestationPolicy.smali" "return" \
-    'isMposSupported()Z' 'false'
-SMALI_PATCH "system_ext" "priv-app/StorageManager/StorageManager.apk" \
-    "smali/com/samsung/android/knox/integrity/EnhancedAttestationPolicy.smali" "return" \
-    'isMposSupported()Z' 'false'
-SMALI_PATCH "system_ext" "priv-app/SystemUI/SystemUI.apk" \
-    "smali_classes4/com/samsung/android/knox/integrity/EnhancedAttestationPolicy.smali" "return" \
-    'isMposSupported()Z' 'false'
-
-# SEC_PRODUCT_FEATURE_KNOX_SUPPORT_KNOXGUARD
-APPLY_PATCH "system" "system/framework/services.jar" \
-    "$MODPATH/knoxguard/services.jar/0001-Disable-KnoxGuard.patch"
-
-# SEC_PRODUCT_FEATURE_SECURITY_SUPPORT_KNOX_MATRIX_AI_PRIVACY
-APPLY_PATCH "system" "system/framework/framework.jar" \
-    "$MODPATH/kmxai/framework.jar/0001-Nuke-Knox-Matrix-AI-Privacy.patch"
-
-# SEC_PRODUCT_FEATURE_FRAMEWORK_SUPPORT_BLOCKCHAIN_SERVICE
-SET_FLOATING_FEATURE_CONFIG "SEC_FLOATING_FEATURE_FRAMEWORK_SUPPORT_BLOCKCHAIN_SERVICE" --delete
-SMALI_PATCH "system" "system/framework/framework.jar" \
-    "smali_classes6/com/samsung/android/ProductPackagesRune.smali" "replaceall" \
-    "SERVICE_SAMSUNG_BLOCKCHAIN:Z = true" \
-    "SERVICE_SAMSUNG_BLOCKCHAIN:Z = false"
-if [[ "$TARGET_SECURITY_CONFIG_ESE_CHIP_VENDOR" == "none" ]] && [[ "$TARGET_SECURITY_CONFIG_ESE_COS_NAME" == "none" ]]; then
-    APPLY_PATCH "system" "system/framework/services.jar" \
-        "$MODPATH/ese+blockchain/services.jar/0001-Nuke-BlockchainTZService.patch"
-else
-    APPLY_PATCH "system" "system/framework/services.jar" \
-        "$MODPATH/blockchain/services.jar/0001-Nuke-BlockchainTZService.patch"
-fi
-
-# TODO 아래 기능 우회하기
-# SEC_PRODUCT_FEATURE_KNOX_SUPPORT_UCS
-# SEC_PRODUCT_FEATURE_FRAMEWORK_SUPPORT_MOBILE_PAYMENT
-
-LOG "- /system/system/framework/services.jar에서 SourceFile 원본 속성 복원 중..."
-find "$APKTOOL_DIR/system/framework/services.jar" -type f -name "*.smali" -print0 \
-    | xargs -0 -I "{}" -P "$(nproc)" sed -i "s/^\.source.*/$SOURCE_FILE_ATTR/g" "{}"
-
-unset SOURCE_FILE_ATTR
+DELETE_FROM_WORK_DIR "system" "system/priv-app/knoxanalyticsagent"
+DELETE_FROM_WORK_DIR "system" "system/priv-app/knoxvpnproxyhandler"
+DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.knox.vpn.proxyhandler.xml"
+DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.knox.analytics.uploader.xml"
+DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.knox.app.networkfilter.xml"
+DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.knox.er.xml"
+DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.knox.kfbp.xml"
+DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.knox.knnr.xml"
+DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.knox.kpecore.xml"
+DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.knox.pushmanager.xml"
+DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.knox.sandbox.xml"
