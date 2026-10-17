@@ -166,7 +166,7 @@ diff --git a/smali_classes2/com/android/server/pm/ScanPackageUtils.smali b/smali
 index 5f3ff92c3..f825a535e 100644
 --- a/smali_classes2/com/android/server/pm/ScanPackageUtils.smali
 +++ b/smali_classes2/com/android/server/pm/ScanPackageUtils.smali
-@@ -162,1 +162,1 @@
+@@ -162,4 +162,4 @@
 -.method public static applyPolicy(Lcom/android/internal/pm/parsing/pkg/ParsedPackage;ILcom/android/server/pm/pkg/AndroidPackage;Z)V
 +.method public static applyPolicy(Lcom/android/internal/pm/parsing/pkg/ParsedPackage;ILcom/android/server/pm/pkg/AndroidPackage;Z[Landroid/content/pm/Signature;)V
      .locals 5
