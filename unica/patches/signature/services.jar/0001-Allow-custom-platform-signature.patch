@@ -16,15 +16,13 @@ diff --git a/smali_classes2/com/android/server/pm/InstallPackageHelper.smali b/s
 index d8893e3df..bedecb3c8 100644
 --- a/smali_classes2/com/android/server/pm/InstallPackageHelper.smali
 +++ b/smali_classes2/com/android/server/pm/InstallPackageHelper.smali
-@@ -12,6 +12,8 @@
- 
+@@ -12,4 +12,6 @@
+
  .field public final mContext:Landroid/content/Context;
- 
+
 +.field public final mCustomPlatformSignatures:[Landroid/content/pm/Signature;
 +
  .field public final mDeletePackageHelper:Lcom/android/server/pm/DeletePackageHelper;
- 
- .field public final mDexManager:Lcom/android/server/pm/dex/DexManager;
 @@ -135,6 +137,18 @@
  
      iput-object p1, p0, Lcom/android/server/pm/InstallPackageHelper;->mUpdateOwnershipHelper:Lcom/android/server/pm/UpdateOwnershipHelper;
@@ -168,10 +166,7 @@ diff --git a/smali_classes2/com/android/server/pm/ScanPackageUtils.smali b/smali
 index 5f3ff92c3..f825a535e 100644
 --- a/smali_classes2/com/android/server/pm/ScanPackageUtils.smali
 +++ b/smali_classes2/com/android/server/pm/ScanPackageUtils.smali
-@@ -179,7 +179,7 @@
-     return-object v0
- .end method
- 
+@@ -162,1 +162,1 @@
 -.method public static applyPolicy(Lcom/android/internal/pm/parsing/pkg/ParsedPackage;ILcom/android/server/pm/pkg/AndroidPackage;Z)V
 +.method public static applyPolicy(Lcom/android/internal/pm/parsing/pkg/ParsedPackage;ILcom/android/server/pm/pkg/AndroidPackage;Z[Landroid/content/pm/Signature;)V
      .locals 5
