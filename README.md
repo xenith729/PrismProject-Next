@@ -40,7 +40,6 @@ PrismProject-Next는 **국내판 삼성 갤럭시 기기를 위한 커스텀 펌
 - 플래그십 디스플레이 기능 (색상 최적화, 가변 주사율, 더 밝게) 지원
 - 플래그십 이미지 기능 (사진 리마스터, AI 지우개, 이미지 클리퍼) 지원
 - 삼성 녹스 애플리케이션 사용 가능 (삼성 월렛, 패스 제외)
-- 카메라 셔터음 토글 지원
 - Samsung DeX(무선) 지원
 ### 트윅
 - 멀티 사용자 지원
@@ -63,6 +62,7 @@ PrismProject-Next는 **국내판 삼성 갤럭시 기기를 위한 커스텀 펌
 
 ## 크레딧
 - **[salvogiangri](https://github.com/salvogiangri)** - UN1CA 빌드 시스템, ROM 패치, 모드 제작
+- **[devcore94](https://github.com/devcore94)** - ROM 패치 제작
 - **[Xenith](https://github.com/xenith729)** - 프로젝트 주도, 빌드 시스템 번역 및 최적화, S21 시리즈 지원, ROM 모드 제작
 
 ### 원본 UN1CA 크레딧
