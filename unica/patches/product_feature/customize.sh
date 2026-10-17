@@ -8,13 +8,13 @@ GET_FINGERPRINT_SENSOR_TYPE()
     elif [[ "$1" == *"side"* ]]; then
         echo "side"
     else
-        ABORT "Unknown fingerprint sensor type: \"$1\". 중단합니다."
+        ABORT "알 수 없는 지문 센서 유형입니다: \"$1\". 중단합니다."
     fi
 }
 
 LOG_MISSING_PATCHES()
 {
-    local MESSAGE="Missing SPF patches for condition ($1: [${!1}], $2: [${!2}])"
+    local MESSAGE="($1: [${!1}], $2: [${!2}]) 유형에 대한 SPF 패치가 존재하지 않습니다."
 
     if $DEBUG; then
         LOGW "$MESSAGE"
