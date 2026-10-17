@@ -5,8 +5,3 @@ SMALI_PATCH "system" "system/framework/framework.jar" \
 SMALI_PATCH "system_ext" "priv-app/SystemUI/SystemUI.apk" \
     "smali_classes2/com/android/systemui/bixby2/controller/DeviceController.smali" "return" \
     'isSupportPowerOffLock()Z' 'true'
-
-# 설정 앱에서 원격 관리 타일 숨기기
-SMALI_PATCH "system" "system/priv-app/SecSettings/SecSettings.apk" \
-    "smali_classes4/com/samsung/android/settings/homepage/TopLevelRemoteSupportPreferenceController.smali" "return" \
-    'getAvailabilityStatus()I' '3'
