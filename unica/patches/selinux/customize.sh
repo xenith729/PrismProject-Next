@@ -5,6 +5,23 @@
 # - DO NOT add any parenthesis or statements (eg. "fabriccrypto" and NOT "expanttypeattribute ... (fabriccrypto)")
 # - DO NOT add unnecessary types or remove the existing ones unless they aren't necessary anymore for all devices
 
+# One UI 9.0 additions
+ENTRIES+="
+mosey_app
+"
+
+# One UI 8.5 additions
+ENTRIES+="
+heatmap_default
+heatmap_default_exec
+sec_diag
+sec_diag_exec
+vendor_display_notch_prop
+vendor_hal_systemhelper_hwservice
+vendor_sys_qti_display
+vendor_systemhelper_app
+"
+
 # One UI 8.0 additions
 ENTRIES+="
 heatmap_default
@@ -54,6 +71,52 @@ GET_SYSTEM_EXT()
         echo "system/system/system_ext"
     fi
 }
+
+if [[ "$CIL_NAME" == "30.0" ]]; then
+    if [ ! -f "$WORK_DIR/system/system/etc/selinux/mapping/$CIL_NAME.cil" ]; then
+        LOG "- 타겟 펌웨어에서 다음 복원 중: /system/system/etc/selinux/mapping/$CIL_NAME.cil"
+        ADD_TO_WORK_DIR "$TARGET_FIRMWARE" "system" "system/etc/selinux/mapping/$CIL_NAME.cil" \
+            0 0 644 "u:object_r:system_file:s0" || \
+            ABORT "타겟 SELinux 매핑을 복원하는 데 실패했습니다: /system/system/etc/selinux/mapping/$CIL_NAME.cil"
+        PATCHED=true
+    fi
+    if [ ! -s "$WORK_DIR/system/system/etc/selinux/mapping/$CIL_NAME.cil" ]; then
+        ABORT "타겟 SELinux 매핑이 존재하지 않습니다: $WORK_DIR/system/system/etc/selinux/mapping/$CIL_NAME.cil"
+    fi
+
+    if [ ! -f "$WORK_DIR/system/system/etc/selinux/mapping/$CIL_NAME.compat.cil" ]; then
+        LOG "- 타겟 펌웨어에서 다음 복원 중: /system/system/etc/selinux/mapping/$CIL_NAME.compat.cil"
+        ADD_TO_WORK_DIR "$TARGET_FIRMWARE" "system" "system/etc/selinux/mapping/$CIL_NAME.compat.cil" \
+            0 0 644 "u:object_r:system_file:s0" || \
+            ABORT "타겟 SELinux 매핑을 복원하는 데 실패했습니다: /system/system/etc/selinux/mapping/$CIL_NAME.compat.cil"
+        PATCHED=true
+    fi
+    if [ ! -s "$WORK_DIR/system/system/etc/selinux/mapping/$CIL_NAME.compat.cil" ]; then
+        ABORT "타겟 SELinux 매핑이 존재하지 않습니다: $WORK_DIR/system/system/etc/selinux/mapping/$CIL_NAME.compat.cil"
+    fi
+
+    if [ ! -f "$WORK_DIR/$SYSTEM_EXT_DIR/etc/selinux/mapping/$CIL_NAME.cil" ]; then
+        LOG "- 타겟 펌웨어에서 다음 복원 중: /system_ext/etc/selinux/mapping/$CIL_NAME.cil"
+        ADD_TO_WORK_DIR "$TARGET_FIRMWARE" "system_ext" "etc/selinux/mapping/$CIL_NAME.cil" \
+            0 0 644 "u:object_r:system_file:s0" || \
+            ABORT "타겟 SELinux 매핑을 복원하는 데 실패했습니다: /system_ext/etc/selinux/mapping/$CIL_NAME.cil"
+        PATCHED=true
+    fi
+    if [ ! -s "$WORK_DIR/$SYSTEM_EXT_DIR/etc/selinux/mapping/$CIL_NAME.cil" ]; then
+        ABORT "타겟 SELinux 매핑이 존재하지 않습니다: $WORK_DIR/$SYSTEM_EXT_DIR/etc/selinux/mapping/$CIL_NAME.cil"
+    fi
+
+    if [ ! -f "$WORK_DIR/$SYSTEM_EXT_DIR/etc/selinux/mapping/$CIL_NAME.compat.cil" ]; then
+        LOG "- 타겟 펌웨어에서 다음 복원 중: /system_ext/etc/selinux/mapping/$CIL_NAME.compat.cil"
+        ADD_TO_WORK_DIR "$TARGET_FIRMWARE" "system_ext" "etc/selinux/mapping/$CIL_NAME.compat.cil" \
+            0 0 644 "u:object_r:system_file:s0" || \
+            ABORT "타겟 SELinux 매핑을 복원하는 데 실패했습니다: /system_ext/etc/selinux/mapping/$CIL_NAME.compat.cil"
+        PATCHED=true
+    fi
+    if [ ! -s "$WORK_DIR/$SYSTEM_EXT_DIR/etc/selinux/mapping/$CIL_NAME.compat.cil" ]; then
+        ABORT "타겟 SELinux 매핑이 존재하지 않습니다: $WORK_DIR/$SYSTEM_EXT_DIR/etc/selinux/mapping/$CIL_NAME.compat.cil"
+    fi
+fi
 
 CIL_NAME="$(head -n 1 "$WORK_DIR/vendor/etc/selinux/plat_sepolicy_vers.txt")"
 PATCHED=false
