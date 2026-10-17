@@ -9,7 +9,7 @@ APPLY_PATCH "system" "system/framework/services.jar" "$MODPATH/services.jar/0001
 
 CERT_SIGNATURE="$(sed "/CERTIFICATE/d" "$SRC_DIR/security/${CERT_PREFIX}_platform.x509.pem" | tr -d "\n" | base64 -d | xxd -p -c 0)"
 SMALI_PATCH "system" "system/framework/services.jar" \
-    "smali_classes2/com/android/server/pm/InstallPackageHelper.smali" "replace" \
+    "smali_classes2/com/android/server/pm/ScanPackageUtils.smali" "replace" \
     'signedWithCustomSignature([Landroid/content/pm/Signature;)Z' \
     'CONFIG_CUSTOM_PLATFORM_SIGNATURE' \
     "$CERT_SIGNATURE" \
