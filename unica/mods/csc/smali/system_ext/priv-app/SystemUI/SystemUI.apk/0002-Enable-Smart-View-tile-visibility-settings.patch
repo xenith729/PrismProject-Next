@@ -13,20 +13,20 @@ index 101dc880f..3a0a8861a 100644
 +++ b/smali/com/android/systemui/QpRune.smali
 @@ -308,17 +308,7 @@
  
-     sput-boolean v3, Lcom/android/systemui/QpRune;->QUICK_TILE_FLASHLIGHT_INTENSITY:Z
+     sput-boolean v6, Lcom/android/systemui/QpRune;->QUICK_TILE_FLASHLIGHT_INTENSITY:Z
  
 -    invoke-static {}, Lcom/samsung/android/feature/SemCscFeature;->getInstance()Lcom/samsung/android/feature/SemCscFeature;
 -
--    move-result-object v3
+-    move-result-object v6
 -
--    const-string v4, "CscFeature_Common_SupportZProjectFunctionInGlobal"
+-    const-string v7, "CscFeature_Common_SupportZProjectFunctionInGlobal"
 -
--    invoke-virtual {v3, v4, v2}, Lcom/samsung/android/feature/SemCscFeature;->getBoolean(Ljava/lang/String;Z)Z
+-    invoke-virtual {v6, v7, v3}, Lcom/samsung/android/feature/SemCscFeature;->getBoolean(Ljava/lang/String;Z)Z
 -
--    move-result v3
+-    move-result v6
 -
--    sput-boolean v3, Lcom/android/systemui/QpRune;->QUICK_TILE_HIDE_FROM_BAR:Z
-+    sput-boolean v1, Lcom/android/systemui/QpRune;->QUICK_TILE_HIDE_FROM_BAR:Z
+-    sput-boolean v6, Lcom/android/systemui/QpRune;->QUICK_TILE_HIDE_FROM_BAR:Z
++    sput-boolean v2, Lcom/android/systemui/QpRune;->QUICK_TILE_HIDE_FROM_BAR:Z
  
      invoke-static {}, Lcom/samsung/android/feature/SemFloatingFeature;->getInstance()Lcom/samsung/android/feature/SemFloatingFeature;
  

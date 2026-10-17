@@ -5,7 +5,7 @@ Subject: [PATCH] Enable quick switch to Secure Folder feature
 
 ---
  .../android/settings/usefulfeature/Usefulfeature$1.smali | 9 ---------
- .../usefulfeature/functionkey/FunctionKeyUtils.smali     | 4 +---
+ .../usefulfeature/functionkey/item/SecureFolderAction.smali | 4 +---
  2 files changed, 1 insertion(+), 12 deletions(-)
 
 diff --git a/smali_classes3/com/samsung/android/settings/usefulfeature/Usefulfeature$1.smali b/smali_classes3/com/samsung/android/settings/usefulfeature/Usefulfeature$1.smali
@@ -35,20 +35,18 @@ index 979ecac3a..500a18679 100644
      const-string p1, "function_key_setting"
  
      iput-object p1, v0, Landroid/provider/SearchIndexableData;->key:Ljava/lang/String;
-diff --git a/smali_classes3/com/samsung/android/settings/usefulfeature/functionkey/FunctionKeyUtils.smali b/smali_classes3/com/samsung/android/settings/usefulfeature/functionkey/FunctionKeyUtils.smali
-index 833fde60a..0a5d87f52 100644
---- a/smali_classes3/com/samsung/android/settings/usefulfeature/functionkey/FunctionKeyUtils.smali
-+++ b/smali_classes3/com/samsung/android/settings/usefulfeature/functionkey/FunctionKeyUtils.smali
-@@ -589,9 +589,7 @@
- 
-     invoke-virtual {v12}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
- 
--    invoke-static {v1, v0}, Lcom/android/settings/Utils;->hasPackage(Landroid/content/Context;Ljava/lang/String;)Z
+diff --git a/smali_classes3/com/samsung/android/settings/usefulfeature/functionkey/item/SecureFolderAction.smali b/smali_classes3/com/samsung/android/settings/usefulfeature/functionkey/item/SecureFolderAction.smali
+--- a/smali_classes3/com/samsung/android/settings/usefulfeature/functionkey/item/SecureFolderAction.smali
++++ b/smali_classes3/com/samsung/android/settings/usefulfeature/functionkey/item/SecureFolderAction.smali
+@@ -144,7 +144,5 @@
+     invoke-virtual {v6}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
+
+-    invoke-static {p0, v0}, Lcom/android/settings/Utils;->hasPackage(Landroid/content/Context;Ljava/lang/String;)Z
 -
 -    move-result v0
 +    const/4 v0, 0x1
- 
-     if-nez v0, :cond_6
+
+     if-nez v0, :cond_1
  
 -- 
 2.51.2
