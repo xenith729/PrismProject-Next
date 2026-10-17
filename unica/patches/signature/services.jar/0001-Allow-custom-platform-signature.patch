@@ -18,34 +18,34 @@ index d8893e3df..bedecb3c8 100644
 +++ b/smali_classes2/com/android/server/pm/InstallPackageHelper.smali
 @@ -12,4 +12,6 @@
  
-  .field public final mContext:Landroid/content/Context;
+ .field public final mContext:Landroid/content/Context;
  
- +.field public final mCustomPlatformSignatures:[Landroid/content/pm/Signature;
- +
-  .field public final mDeletePackageHelper:Lcom/android/server/pm/DeletePackageHelper;
++.field public final mCustomPlatformSignatures:[Landroid/content/pm/Signature;
++
+ .field public final mDeletePackageHelper:Lcom/android/server/pm/DeletePackageHelper;
 @@ -173,12 +173,24 @@
  
-      iput-object p1, p0, Lcom/android/server/pm/InstallPackageHelper;->mUpdateOwnershipHelper:Lcom/android/server/pm/UpdateOwnershipHelper;
+     iput-object p1, p0, Lcom/android/server/pm/InstallPackageHelper;->mUpdateOwnershipHelper:Lcom/android/server/pm/UpdateOwnershipHelper;
  
- +    const-string p1, "CONFIG_CUSTOM_PLATFORM_SIGNATURE"
- +
- +    filled-new-array {p1}, [Ljava/lang/String;
- +
- +    move-result-object p1
- +
- +    invoke-static {p1}, Lcom/android/server/pm/InstallPackageHelper;->createSignatures([Ljava/lang/String;)[Landroid/content/pm/Signature;
- +
- +    move-result-object p1
- +
- +    iput-object p1, p0, Lcom/android/server/pm/InstallPackageHelper;->mCustomPlatformSignatures:[Landroid/content/pm/Signature;
- +
-      new-instance p1, Landroid/util/ArraySet;
++    const-string p1, "CONFIG_CUSTOM_PLATFORM_SIGNATURE"
++
++    filled-new-array {p1}, [Ljava/lang/String;
++
++    move-result-object p1
++
++    invoke-static {p1}, Lcom/android/server/pm/InstallPackageHelper;->createSignatures([Ljava/lang/String;)[Landroid/content/pm/Signature;
++
++    move-result-object p1
++
++    iput-object p1, p0, Lcom/android/server/pm/InstallPackageHelper;->mCustomPlatformSignatures:[Landroid/content/pm/Signature;
++
+     new-instance p1, Landroid/util/ArraySet;
  
-      invoke-direct {p1}, Landroid/util/ArraySet;-><init>()V
+     invoke-direct {p1}, Landroid/util/ArraySet;-><init>()V
  
-      iput-object p1, p0, Lcom/android/server/pm/InstallPackageHelper;->mInstallingPackages:Ljava/util/Set;
+     iput-object p1, p0, Lcom/android/server/pm/InstallPackageHelper;->mInstallingPackages:Ljava/util/Set;
  
-      sget-boolean p1, Lcom/samsung/android/rune/PMRune;->PM_BADGE_ON_MONETIZED_APP_SUPPORTED:Z
+     sget-boolean p1, Lcom/samsung/android/rune/PMRune;->PM_BADGE_ON_MONETIZED_APP_SUPPORTED:Z
 @@ -149,6 +163,34 @@
      return-void
  .end method
