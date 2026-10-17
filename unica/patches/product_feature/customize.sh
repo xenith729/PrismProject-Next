@@ -685,27 +685,25 @@ fi
 
 # SEC_PRODUCT_FEATURE_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS
 if [[ "$SOURCE_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS" != "$TARGET_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS" ]]; then
-    if [[ "$SOURCE_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS" != "none" ]]; then
-        if [[ "$SOURCE_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS" != "none" ]] || 
-                [[ "$TARGET_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS" == "none" ]]; then
-            ABORT "Unsupported Android 17 normal-speed refresh-rate transition"
-        fi
-        SET_FLOATING_FEATURE_CONFIG "SEC_FLOATING_FEATURE_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS" \
-            "$TARGET_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS"
-        SMALI_PATCH "system" "system/framework/framework.jar" \
-            "smali_classes6/com/samsung/android/hardware/display/RefreshRateConfig.smali" "replace" \
-            "getMainInstance()Lcom/samsung/android/hardware/display/RefreshRateConfig;" \
-            "const-string v2, \"$TARGET_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE\"" \
-            "const-string v2, \"$TARGET_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE\""
-        SMALI_PATCH "system" "system/framework/framework.jar" \
-            "smali_classes6/com/samsung/android/hardware/display/RefreshRateConfig.smali" "replace" \
-            "getMainInstance()Lcom/samsung/android/hardware/display/RefreshRateConfig;" \
-            "const-string v3, \"\"" \
-            "const-string v3, \"$TARGET_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS\""
-    else
-        # TODO handle this condition
-        LOG_MISSING_PATCHES "SOURCE_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS" "TARGET_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS"
+    if [[ "$SOURCE_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS" != "none" ]] || 
+            [[ "$TARGET_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS" == "none" ]]; then
+        ABORT "Unsupported Android 17 normal-speed refresh-rate transition"
     fi
+    SET_FLOATING_FEATURE_CONFIG "SEC_FLOATING_FEATURE_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS" \
+        "$TARGET_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS"
+    SMALI_PATCH "system" "system/framework/framework.jar" \
+        "smali_classes6/com/samsung/android/hardware/display/RefreshRateConfig.smali" "replace" \
+        "getMainInstance()Lcom/samsung/android/hardware/display/RefreshRateConfig;" \
+        "const-string v2, \"$TARGET_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE\"" \
+        "const-string v2, \"$TARGET_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE\""
+    SMALI_PATCH "system" "system/framework/framework.jar" \
+        "smali_classes6/com/samsung/android/hardware/display/RefreshRateConfig.smali" "replace" \
+        "getMainInstance()Lcom/samsung/android/hardware/display/RefreshRateConfig;" \
+        "const-string v3, \"\"" \
+        "const-string v3, \"$TARGET_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS\""
+else
+    # TODO handle this condition
+    LOG_MISSING_PATCHES "SOURCE_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS" "TARGET_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS"
 fi
 
 # SEC_PRODUCT_FEATURE_LCD_SUPPORT_MDNIE_HW
