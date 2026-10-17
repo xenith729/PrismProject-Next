@@ -796,29 +796,45 @@ fi
 if [[ "$SOURCE_WLAN_CONFIG_CPU_CSTATE_DISABLE_THRESHOLD" != "$TARGET_WLAN_CONFIG_CPU_CSTATE_DISABLE_THRESHOLD" ]] || \
         [[ "$SOURCE_WLAN_CONFIG_DATA_ACTIVITY_AFFINITY_BOOSTER_THRESHOLD" != "$TARGET_WLAN_CONFIG_DATA_ACTIVITY_AFFINITY_BOOSTER_THRESHOLD" ]] || \
         [[ "$SOURCE_WLAN_CONFIG_L1SS_DISABLE_THRESHOLD" != "$TARGET_WLAN_CONFIG_L1SS_DISABLE_THRESHOLD" ]]; then
-    if [[ "$SOURCE_WLAN_CONFIG_CPU_CSTATE_DISABLE_THRESHOLD" == "100" ]] && \
-            [[ "$SOURCE_WLAN_CONFIG_DATA_ACTIVITY_AFFINITY_BOOSTER_THRESHOLD" == "0" ]] && \
-            [[ "$SOURCE_WLAN_CONFIG_L1SS_DISABLE_THRESHOLD" == "0" ]]; then
-        APPLY_PATCH "system" "system/framework/semwifi-service.jar" \
-            "$MODPATH/wifi/thresholds/semwifi-service.jar/0001-Allow-custom-booster-thresholds-values.patch"
-        SMALI_PATCH "system" "system/framework/semwifi-service.jar" \
-            "smali/com/samsung/android/server/wifi/SemFrameworkFacade.smali" "replace" \
-            "getBoosterThresholds()[I" \
-            "CONFIG_DATA_ACTIVITY_AFFINITY_BOOSTER_THRESHOLD" \
-            "$TARGET_WLAN_CONFIG_DATA_ACTIVITY_AFFINITY_BOOSTER_THRESHOLD" | \
-            sed "s/CONFIG_DATA_ACTIVITY_AFFINITY_BOOSTER_THRESHOLD/$SOURCE_WLAN_CONFIG_DATA_ACTIVITY_AFFINITY_BOOSTER_THRESHOLD/g"
-        SMALI_PATCH "system" "system/framework/semwifi-service.jar" \
-            "smali/com/samsung/android/server/wifi/SemFrameworkFacade.smali" "replace" \
-            "getBoosterThresholds()[I" \
-            "CONFIG_CPU_CSTATE_DISABLE_THRESHOLD" \
-            "$TARGET_WLAN_CONFIG_CPU_CSTATE_DISABLE_THRESHOLD" | \
-            sed "s/CONFIG_CPU_CSTATE_DISABLE_THRESHOLD/$SOURCE_WLAN_CONFIG_CPU_CSTATE_DISABLE_THRESHOLD/g"
-        SMALI_PATCH "system" "system/framework/semwifi-service.jar" \
-            "smali/com/samsung/android/server/wifi/SemFrameworkFacade.smali" "replace" \
-            "getBoosterThresholds()[I" \
-            "CONFIG_L1SS_DISABLE_THRESHOLD" \
-            "$TARGET_WLAN_CONFIG_L1SS_DISABLE_THRESHOLD" | \
-            sed "s/CONFIG_L1SS_DISABLE_THRESHOLD/$SOURCE_WLAN_CONFIG_L1SS_DISABLE_THRESHOLD/g"
+    if [ "$SOURCE_PLATFORM_SDK_VERSION" -ge "37" ]; then
+        DECODE_APK "system" "system/framework/semwifi-service.jar"
+        FILE="$APKTOOL_DIR/system/framework/semwifi-service.jar/smali/com/samsung/android/server/wifi/SemFrameworkFacade.smali"
+        BOOSTER_THRESHOLD_0="$(printf '0x%x' "$((TARGET_WLAN_CONFIG_DATA_ACTIVITY_AFFINITY_BOOSTER_THRESHOLD * 1048576 / 8))")"
+        BOOSTER_THRESHOLD_1="$(printf '0x%x' "$((TARGET_WLAN_CONFIG_CPU_CSTATE_DISABLE_THRESHOLD * 1048576 / 8))")"
+        BOOSTER_THRESHOLD_2="$(printf '0x%x' "$((TARGET_WLAN_CONFIG_L1SS_DISABLE_THRESHOLD * 1048576 / 8))")"
+
+        awk \
+            -v V0="$BOOSTER_THRESHOLD_0" \
+            -v V1="$BOOSTER_THRESHOLD_1" \
+            -v V2="$BOOSTER_THRESHOLD_2" '
+            /^\.method/ && index($0, "getBoosterThresholds()[I") {
+                print ".method public getBoosterThresholds()[I"
+                print "    .locals 3"
+                print ""
+                print "    const v0, " V0
+                print ""
+                print "    const v1, " V1
+                print ""
+                print "    const v2, " V2
+                print ""
+                print "    filled-new-array {v0, v1, v2}, [I"
+                print ""
+                print "    move-result-object v0"
+                print ""
+                print "    return-object v0"
+                print ".end method"
+                inside = 1
+                next
+            }
+            inside && /^\.end method/ {
+                inside = 0
+                next
+            }
+            inside { next }
+            { print }
+        ' "$FILE" > "$FILE.tmp" && mv "$FILE.tmp" "$FILE"
+
+        unset BOOSTER_THRESHOLD_0 BOOSTER_THRESHOLD_1 BOOSTER_THRESHOLD_2
     else
         # TODO handle these conditions
         LOG_MISSING_PATCHES "SOURCE_WLAN_CONFIG_CPU_CSTATE_DISABLE_THRESHOLD" "TARGET_WLAN_CONFIG_CPU_CSTATE_DISABLE_THRESHOLD" || true
