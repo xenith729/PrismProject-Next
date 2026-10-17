@@ -694,12 +694,7 @@ if [[ "$SOURCE_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS" != "$TARGET_LCD_CONFIG_
     SMALI_PATCH "system" "system/framework/framework.jar" \
         "smali_classes6/com/samsung/android/hardware/display/RefreshRateConfig.smali" "replace" \
         "getMainInstance()Lcom/samsung/android/hardware/display/RefreshRateConfig;" \
-        "const-string v2, \"$TARGET_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE\"" \
-        "const-string v2, \"$TARGET_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE\""
-    SMALI_PATCH "system" "system/framework/framework.jar" \
-        "smali_classes6/com/samsung/android/hardware/display/RefreshRateConfig.smali" "replace" \
-        "getMainInstance()Lcom/samsung/android/hardware/display/RefreshRateConfig;" \
-        "const-string v3, \"\"" \
+        'const-string v3, ""' \
         "const-string v3, \"$TARGET_LCD_CONFIG_HFR_SUPPORTED_REFRESH_RATE_NS\""
 else
     # TODO handle this condition
