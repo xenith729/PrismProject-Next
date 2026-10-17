@@ -27,12 +27,6 @@ index d8893e3df..bedecb3c8 100644
 
      iput-object p1, p0, Lcom/android/server/pm/InstallPackageHelper;->mUpdateOwnershipHelper:Lcom/android/server/pm/UpdateOwnershipHelper;
 
-+    new-instance p1, Landroid/util/ArraySet;
-+
-+    invoke-direct {p1}, Landroid/util/ArraySet;-><init>()V
-+
-+    iput-object p1, p0, Lcom/android/server/pm/InstallPackageHelper;->mInstallingPackages:Ljava/util/Set;
-+
 +    const-string p1, "CONFIG_CUSTOM_PLATFORM_SIGNATURE"
 +
 +    filled-new-array {p1}, [Ljava/lang/String;
@@ -45,9 +39,13 @@ index d8893e3df..bedecb3c8 100644
 +
 +    iput-object p1, p0, Lcom/android/server/pm/InstallPackageHelper;->mCustomPlatformSignatures:[Landroid/content/pm/Signature;
 +
-     sget-boolean p1, Lcom/samsung/android/rune/PMRune;->PM_BADGE_ON_MONETIZED_APP_SUPPORTED:Z
+     new-instance p1, Landroid/util/ArraySet;
 
-     if-eqz p1, :cond_0
+     invoke-direct {p1}, Landroid/util/ArraySet;-><init>()V
+
+     iput-object p1, p0, Lcom/android/server/pm/InstallPackageHelper;->mInstallingPackages:Ljava/util/Set;
+
+     sget-boolean p1, Lcom/samsung/android/rune/PMRune;->PM_BADGE_ON_MONETIZED_APP_SUPPORTED:Z
 @@ -149,6 +163,34 @@
      return-void
  .end method
